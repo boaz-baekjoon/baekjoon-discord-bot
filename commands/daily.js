@@ -6,7 +6,7 @@
 // 4. 형식이 잘못되면 오류 메시지 및 "다시 입력해주세요".
 // 5. 쿼리 실행 후 등록
 
-
+//TODO 일일 문제 알림 비활성화
 const { getConnection } = require('../database/connect');
 const logger = require("../logger")
 

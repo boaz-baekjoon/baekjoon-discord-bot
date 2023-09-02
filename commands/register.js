@@ -1,3 +1,5 @@
+//TODO 백준 아이디 변경
+
 const { getConnection } = require('../database/connect')
 
 async function registerId(discordId, bojId) {
