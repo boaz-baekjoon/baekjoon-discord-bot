@@ -32,16 +32,24 @@ async function getUserCron(author, message, userCommandStatus){
 
         if (rows.length > 0) {
             const [hour, min] = rows[0].cron.split(' ');
-            message.reply(`${hour}시 ${min}분으로 알림이 설정된 상태입니다. 변경하시겠습니까? (y/n)`);
+            message.reply(`${hour}시 ${min}분으로 알림이 설정된 상태입니다. 알림을 비활성화하려면 '비활성화', 변경하시려면 '변경', 명령을 취소하려면 '취소'를 입력해주세요`);
 
-            const responseFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!') && (m.content === 'y' || m.content === 'n');
+            const responseFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!') && (m.content === '비활성화' || m.content === '변경' || m.content === '취소');
             const responseCollector = message.channel.createMessageCollector({filter: responseFilter,max:1, time: 20000});
 
             responseCollector.on('collect', async msg => {
-                if (msg.content === 'y'){
+                if (msg.content === '변경'){
                     askForTime(message, userCommandStatus, conn, 1);
-                }else if (msg.content === 'n'){
+                }else if (msg.content === '취소'){
                     message.reply("변경을 취소하셨습니다.")
+                }else if (msg.content === '비활성화'){
+                    const result = await deleteCron(message, userCommandStatus, conn);
+                    if (result === 0){
+                        message.reply("알림을 비활성화했습니다")
+                    }else{
+                        message.reply("알 수 없는 오류가 발생했습니다.")
+                    }
+
                 }
                 responseCollector.stop();
             });
@@ -138,6 +146,17 @@ async function insertUserCron(discordId, userInput, conn, isAltering) {
         logger.error(`Error on daily func : ${error}`)
         await conn.rollback();
         return -1; //알 수 없는 오류 발생
+    }
+}
+
+async function deleteCron(message, userCommandStatus, conn){
+    try{
+        logger.info(`Deleting cron of ${message.author.id}`)
+        await conn.execute('DELETE FROM user_cron WHERE discord_id = ?', [message.author.id]);
+        return 0;
+    }catch(error){
+        logger.error(error)
+        return -1;
     }
 }
 
