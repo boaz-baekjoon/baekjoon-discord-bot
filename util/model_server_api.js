@@ -4,14 +4,11 @@ const dotenv = require("dotenv")
 const {bojProblem} = require("../models/problem");
 
 dotenv.config()
-export default class modelConnector {
-    constructor() {
-        this.baseUrl = process.env.BASE_URL;
-    }
-
-    async getRecommendedProblem(userId, problemNum){
+class ModelConnector {
+    constructor() {}
+    async getPersonalizedProblems(userId, problemNum){
         let problem_arr = [];
-        const response = await axios.get(`${this.baseUrl}/api/random` , {
+        const response = await axios.get(`${process.env.BASE_URL}/api/random` , {
             timeout: 3000,
             params:{
                 user_id: userId,
@@ -27,5 +24,6 @@ export default class modelConnector {
             return problem_arr;
         })
     }
-
 }
+
+module.exports = { ModelConnector }
