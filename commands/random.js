@@ -43,7 +43,7 @@ async function getRandomProblem(attempts = 0) {
         return await getRandomProblem(attempts + 1);
     }
 }
-
+//TODO 디스코드 ID가 아닌 백준 ID를 통해 개인화된 문제를 반환하도록 해야 함
 module.exports = {
     name: '문제 랜덤 추천',
     async execute(message, userCommandStatus, args) {
