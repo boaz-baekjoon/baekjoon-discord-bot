@@ -45,13 +45,10 @@ class bojProblem{
             .setTimestamp();
     }
 
-    getErrorMsg(msgTitle){
-        this.problemId = -1;
-        this.title = "알 수 없는 오류가 발생했습니다.";
-        this.level = 0;
-        this.tags = []
-        return this.getEmbedMsg(msgTitle)
-    }
+}
+function getProblemErrorMsg(msgTitle){
+    const bojProblem = new bojProblem(-1, "알 수 없는 오류가 발생했습니다.", 0, [])
+    return bojProblem.getEmbedMsg(msgTitle)
 }
 
-module.exports = {bojProblem}
+module.exports = {bojProblem, getProblemErrorMsg}
