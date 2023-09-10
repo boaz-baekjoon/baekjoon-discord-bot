@@ -1,6 +1,6 @@
 const {EmbedBuilder} = require("discord.js");
 
-class bojProblem{
+class BojProblem{
     constructor() {}
     setProperties(problemId, title, level, tags){
         this.problemId = problemId
@@ -52,4 +52,4 @@ function getProblemErrorMsg(msgTitle){
     return bojProblem.getEmbedMsg(msgTitle)
 }
 
-module.exports = {bojProblem, getProblemErrorMsg}
+module.exports = {BojProblem, getProblemErrorMsg}
