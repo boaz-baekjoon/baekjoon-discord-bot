@@ -1,4 +1,4 @@
-const { getConnection } = require('../database/connect')
+const { getConnection } = require('../util/discord_db')
 
 
 describe("connecting DB", () => {

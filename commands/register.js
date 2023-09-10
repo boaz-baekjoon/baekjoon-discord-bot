@@ -1,6 +1,6 @@
 //TODO 백준 아이디 변경
 
-const { getConnection } = require('../database/connect')
+const { getConnection } = require('../util/discord_db')
 
 async function registerId(discordId, bojId) {
     const conn = await getConnection(); //DB 연결 구축

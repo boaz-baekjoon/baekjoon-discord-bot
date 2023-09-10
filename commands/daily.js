@@ -7,7 +7,7 @@
 // 5. 쿼리 실행 후 등록
 
 //TODO 일일 문제 알림 비활성화
-const { getConnection } = require('../database/connect');
+const { getConnection } = require('../util/discord_db');
 const logger = require("../logger")
 
 async function getUserCron(author, message, userCommandStatus){

@@ -1,4 +1,4 @@
-const { getConnection } = require('../database/connect')
+const { getConnection } = require('../util/discord_db')
 const { getRandomProblem } = require('../commands/random')
 const logger = require("../logger")
 async function sendRandomMessage(client) {
