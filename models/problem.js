@@ -26,11 +26,11 @@ class bojProblem{
         }
     }
 
-    getEmbedMsg(title){
+    getEmbedMsg(msgTitle){
         return new EmbedBuilder()
             .setColor(0x3498DB)
             .setAuthor({name: 'BOJ Bot'})
-            .setTitle(title)
+            .setTitle(msgTitle)
             .addFields(
                 {name: '문제 번호:', value: `${this.problemId}`, inline: false},
                 {name: '문제:', value: `${this.title}`, inline: false},
@@ -43,6 +43,14 @@ class bojProblem{
                 {name: '링크', value: `https://www.acmicpc.net/problem/${this.problemId}`, inline: false}
             )
             .setTimestamp();
+    }
+
+    getErrorMsg(msgTitle){
+        this.problemId = -1;
+        this.title = "알 수 없는 오류가 발생했습니다.";
+        this.level = 0;
+        this.tags = []
+        return this.getEmbedMsg(msgTitle)
     }
 }
 
