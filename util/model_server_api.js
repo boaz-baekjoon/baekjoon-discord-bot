@@ -12,8 +12,9 @@ async function getPersonalizedProblems(userId, problemNum){
             user_id: userId,
             num: problemNum
         }
-    }).then(response =>{
-        problem_arr = response.data.problems;
+    }).then(res =>{
+        console.log(res)
+        problem_arr = res.data[problems];
     }).catch(error => {
         if (error.code === 'ECONNABORTED'){
             logger.error(error)

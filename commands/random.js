@@ -3,6 +3,7 @@ const axios = require('axios')
 const {BojProblem, getErrorMsg, getProblemErrorMsg} = require("../models/problem");
 const logger = require("../logger")
 const {getPersonalizedProblems} = require("../util/model_server_api");
+const discordUtil = require("../util/discord_db");
 
 
 async function getRecommendedProblem(user_id) {
@@ -51,15 +52,28 @@ async function getRandomProblem(attempts = 0) {
 module.exports = {
     name: '문제 랜덤 추천',
     async execute(message, userCommandStatus, args) {
+        let conn;
         try{
-            const randProblem = await getRecommendedProblem();
+            conn = await discordUtil.getConnection()
+
+            const existingID = await discordUtil.getBojID(conn, message.author.id)
+
+            if (existingID.length < 1) { //없다면
+                message.reply("백준 아이디를 등록하지 않았아요. !register을 통해 아이디를 등록해주세요");
+                return;
+            }
+
+            const randProblem = await getRecommendedProblem(existingID[0]['boj_id']);
             logger.info(`반환 성공 : ${message.author.id}에게 ${randProblem.problemId}번 문제 반환`)
 
             const randProblemMsg = randProblem.getEmbedMsg("랜덤 문제입니다.")
 
             message.channel.send({embeds: [randProblemMsg]})
         }catch (error){
+            logger.error(error.message)
             message.reply("알 수 없는 오류가 발생했습니다.")
+        }finally {
+            conn.release()
         }
 
     }, getRandomProblem
