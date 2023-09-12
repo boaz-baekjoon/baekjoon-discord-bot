@@ -48,7 +48,7 @@ class BojProblem{
 
 }
 function getProblemErrorMsg(msgTitle){
-    const bojProblem = new bojProblem(-1, "알 수 없는 오류가 발생했습니다.", 0, [])
+    const bojProblem = new BojProblem(-1, "알 수 없는 오류가 발생했습니다.", 0, [])
     return bojProblem.getEmbedMsg(msgTitle)
 }
 
