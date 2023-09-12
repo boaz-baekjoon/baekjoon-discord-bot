@@ -135,7 +135,7 @@ async function insertUserCron(discordId, userInput, conn, isAltering) {
                 return -1;
             }
         }else{
-            await conn.execute('UPDATE user_cron SET cron = ? where discord_id = ?', [userCron, discordId]);
+            await discordUtil.modifyCron(conn, discordId, userCron);
         }
         return 0;
     }catch (error){

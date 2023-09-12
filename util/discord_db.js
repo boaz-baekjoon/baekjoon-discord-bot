@@ -64,7 +64,11 @@ async function insertCron(conn, discord_id, userCron){
     }
 }
 async function modifyCron(conn, discord_id, userCron){
-
+    try{
+        await conn.execute('UPDATE user_cron SET cron = ? where discord_id = ?', [userCron, discord_id]);
+    }catch(error){
+        logger.error(error.message)
+    }
 }
 
 async function deleteCron(conn, discord_id){
