@@ -1,20 +1,18 @@
 //TODO 백준 아이디 변경
 
-const { getConnection } = require('../util/discord_db')
+const discord_util = require('../util/discord_db')
 
 async function registerId(discordId, bojId) {
-    const conn = await getConnection(); //DB 연결 구축
+    const conn = await discord_util.getConnection(); //DB 연결 구축
 
     try {
         await conn.beginTransaction(); //트랜잭션 시작
 
         console.log("Searching existing ID...")
 
-        const [rows] = await conn.execute('SELECT boj_id FROM registered_user WHERE discord_id = ?', [discordId]);
-        //현재 등록하고자 하는 백준 ID가 이미 있는지 확인
-        console.log(`returned rows: ${JSON.stringify(rows, null, 2)}`);
+        const bojId_response = await discord_util.getBojID(conn, discordId)
 
-        if (rows.length > 0) { //이미 있다면
+        if (bojId_response.length > 0) { //이미 있다면
             return "이미 백준 아이디를 등록하셨습니다."; //TODO 이 부분은 나중에 백준 ID를 수정 가능하도록 바꿔야 함.
         }
 

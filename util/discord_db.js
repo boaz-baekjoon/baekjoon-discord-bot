@@ -27,14 +27,14 @@ const getConnection = async () => { //Pool 커넥션 불러오기
 }
 
 async function getBojID(conn, discord_id){
-    let boj_id = []
     try{
-        boj_id = await conn.execute('SELECT boj_id FROM registered_user WHERE discord_id = ?', [discord_id]);
+        const [boj_id] = await conn.execute('SELECT boj_id FROM registered_user WHERE discord_id = ?', [discord_id]);
         logger.info(`request id: ${discord_id} / returned rows: ${JSON.stringify(boj_id, null, 2)}`);
+        return boj_id;
     }catch (error){
         logger.error(error.message)
+        return [];
     }
-    return boj_id;
 }
 
 async function modifyBojId(conn, discord_id){}
