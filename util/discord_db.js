@@ -26,7 +26,16 @@ const getConnection = async () => { //Pool 커넥션 불러오기
     }
 }
 
-async function getBojID(conn, discord_id){}
+async function getBojID(conn, discord_id){
+    let boj_id = []
+    try{
+        boj_id = await conn.execute('SELECT boj_id FROM registered_user WHERE discord_id = ?', [discord_id]);
+        logger.info(`request id: ${discord_id} / returned rows: ${JSON.stringify(boj_id, null, 2)}`);
+    }catch (error){
+        logger.error(error.message)
+    }
+    return boj_id;
+}
 
 async function modifyBojId(conn, discord_id){}
 
@@ -38,4 +47,4 @@ async function modifyCron(conn, discord_id){}
 
 async function deleteCron(conn, discord_id){}
 
-module.exports = { getConnection }
+module.exports = { getConnection, getBojID, modifyBojId, deleteBojId, getDiscordIdWithCron, modifyCron, deleteCron}
