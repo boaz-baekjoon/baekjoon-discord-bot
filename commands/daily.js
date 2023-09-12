@@ -39,7 +39,7 @@ async function getUserCron(author, message, userCommandStatus){
                 }else if (msg.content === '취소'){
                     message.reply("변경을 취소하셨습니다.")
                 }else if (msg.content === '비활성화'){
-                    const result = await deleteCron(message, userCommandStatus, conn);
+                    const result = await discordUtil.deleteCron(conn, message.author.id)
                     if (result === 0){
                         message.reply("알림을 비활성화했습니다")
                     }else{
@@ -145,16 +145,6 @@ async function insertUserCron(discordId, userInput, conn, isAltering) {
     }
 }
 
-async function deleteCron(message, userCommandStatus, conn){
-    try{
-        logger.info(`Deleting cron of ${message.author.id}`)
-        await conn.execute('DELETE FROM user_cron WHERE discord_id = ?', [message.author.id]);
-        return 0;
-    }catch(error){
-        logger.error(error)
-        return -1;
-    }
-}
 
 module.exports = {
     name: 'daily',

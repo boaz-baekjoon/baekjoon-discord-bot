@@ -67,6 +67,15 @@ async function modifyCron(conn, discord_id, userCron){
 
 }
 
-async function deleteCron(conn, discord_id){}
+async function deleteCron(conn, discord_id){
+    try{
+        logger.info(`Deleting cron of ${discord_id}`)
+        await conn.execute('DELETE FROM user_cron WHERE discord_id = ?', [discord_id]);
+        return 0;
+    }catch(error){
+        logger.error(error)
+        return -1;
+    }
+}
 
 module.exports = { getConnection, getBojID, modifyBojId, deleteBojId, getCronWithDiscordId,insertCron, modifyCron, deleteCron}
