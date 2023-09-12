@@ -7,31 +7,27 @@
 // 5. 쿼리 실행 후 등록
 
 //TODO 일일 문제 알림 비활성화
-const { getConnection } = require('../util/discord_db');
 const logger = require("../logger")
+const discordUtil = require("../util/discord_db")
 
 async function getUserCron(author, message, userCommandStatus){
-    const conn = await getConnection();
+    const conn = await discordUtil.getConnection();
 
     try{
         await conn.beginTransaction()
         logger.verbose("DB Begin Transaction. 이미 존재하는 BOJ ID 탐색")
 
-        const [existingID] = await conn.execute('SELECT boj_id FROM registered_user WHERE discord_id = ?', [author.id]);
-        //현재 등록하고자 하는 백준 ID가 이미 있는지 확인
-        logger.info(`request id: ${author.id} / returned rows: ${JSON.stringify(existingID, null, 2)}`);
+        const existingID = await discordUtil.getBojID(conn, message.author.id)
 
-        if (existingID.length < 1) { //이미 있다면
+        if (existingID.length < 1) { //없다면
             message.reply("백준 아이디를 등록하지 않았아요. !register을 통해 아이디를 등록해주세요");
             return;
         }
 
+        const user_cron = await discordUtil.getCronWithDiscordId(conn, message.author.id)
 
-        const [rows] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [author.id])
-        logger.info(`request id: ${author.id} / returned rows: ${JSON.stringify(rows, null, 2)}`);
-
-        if (rows.length > 0) {
-            const [hour, min] = rows[0].cron.split(' ');
+        if (user_cron.length > 0) {
+            const [hour, min] = user_cron[0].cron.split(' ');
             message.reply(`${hour}시 ${min}분으로 알림이 설정된 상태입니다. 알림을 비활성화하려면 '비활성화', 변경하시려면 '변경', 명령을 취소하려면 '취소'를 입력해주세요`);
 
             const responseFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!') && (m.content === '비활성화' || m.content === '변경' || m.content === '취소');
@@ -134,13 +130,13 @@ async function insertUserCron(discordId, userInput, conn, isAltering) {
     const userCron = `${norm_hour} ${norm_min}`
     try{
         if (!isAltering){
-            await conn.execute('INSERT INTO user_cron(discord_id, cron) VALUES(?, ?)', [discordId, userCron]);
+            const response = await discordUtil.insertCron(conn, discordId, userCron);
+            if(response.length < 1){
+                return -1;
+            }
         }else{
             await conn.execute('UPDATE user_cron SET cron = ? where discord_id = ?', [userCron, discordId]);
         }
-
-        const [rows] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discordId])
-        logger.info(`${discordId} / returned rows: ${JSON.stringify(rows, null, 2)}`);
         return 0;
     }catch (error){
         logger.error(`Error on daily func : ${error}`)

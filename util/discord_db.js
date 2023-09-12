@@ -41,10 +41,32 @@ async function modifyBojId(conn, discord_id){}
 
 async function deleteBojId(conn, discord_id){}
 
-async function getDiscordIdWithCron(conn, discord_id) {}
+async function getCronWithDiscordId(conn, discord_id) {
+    const [rows] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discord_id])
+    logger.info(`request id: ${discord_id} / returned rows: ${JSON.stringify(rows, null, 2)}`);
+    return rows
 
-async function modifyCron(conn, discord_id){}
+}
+
+async function insertCron(conn, discord_id, userCron){
+    try{
+        await conn.execute('INSERT INTO user_cron(discord_id, cron) VALUES(?, ?)', [discord_id, userCron]);
+        const [cron_response] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discord_id])
+
+        if (cron_response[0]["cron"] === userCron){
+            logger.info(`${discord_id} / returned rows: ${JSON.stringify(cron_response, null, 2)}`);
+            return cron_response
+        }else{
+            return []
+        }
+    }catch (error){
+        logger.error(error.message)
+    }
+}
+async function modifyCron(conn, discord_id, userCron){
+
+}
 
 async function deleteCron(conn, discord_id){}
 
-module.exports = { getConnection, getBojID, modifyBojId, deleteBojId, getDiscordIdWithCron, modifyCron, deleteCron}
+module.exports = { getConnection, getBojID, modifyBojId, deleteBojId, getCronWithDiscordId,insertCron, modifyCron, deleteCron}
