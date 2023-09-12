@@ -26,4 +26,16 @@ const getConnection = async () => { //Pool 커넥션 불러오기
     }
 }
 
+async function getBojID(conn, discord_id){}
+
+async function modifyBojId(conn, discord_id){}
+
+async function deleteBojId(conn, discord_id){}
+
+async function getDiscordIdWithCron(conn, discord_id) {}
+
+async function modifyCron(conn, discord_id){}
+
+async function deleteCron(conn, discord_id){}
+
 module.exports = { getConnection }
