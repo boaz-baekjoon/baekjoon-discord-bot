@@ -1,5 +1,3 @@
-//TODO 백준 아이디 변경
-
 const discord_util = require('../util/discord_db')
 const logger = require('../logger')
 
