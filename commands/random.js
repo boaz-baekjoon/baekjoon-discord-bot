@@ -1,6 +1,5 @@
-const {EmbedBuilder} = require('discord.js')
 const axios = require('axios')
-const {BojProblem, getErrorMsg, getProblemErrorMsg} = require("../models/problem");
+const {BojProblem, getProblemErrorMsg} = require("../models/problem");
 const logger = require("../logger")
 const modelUtil = require("../util/model_server_api");
 const discordUtil = require("../util/discord_db");

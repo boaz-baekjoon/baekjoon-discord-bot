@@ -1,7 +1,6 @@
 const axios = require("axios")
 const logger = require("../logger")
 const dotenv = require("dotenv")
-const {BojProblem} = require("../models/problem");
 
 dotenv.config()
 async function getPersonalizedProblems(userId, problemNum){
