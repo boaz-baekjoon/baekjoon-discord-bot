@@ -76,29 +76,3 @@ module.exports = {
 
     },
 };
-
-
-
-"message.reply(`${message.author.toString()}님. 백준 ID를 입력해주세요!`)\n" +
-"            const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');\n" +
-"            //Bot이 자체적으로 전송하는 메시지를 거르고, '!'로 시작하며 해당 명령어를 친 사용자 명령어만 받아야함.\n" +
-"            const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});\n" +
-"            //메시지 콜렉터 생성. 최대 한 개의 백준 ID만 받으며 제한시간은 20초\n" +
-"\n" +
-"            idCollector.on('collect', async msg => {\n" +
-"                const bojId = msg.content;\n" +
-"                const queryMessage = await registerId(msg.author.id, bojId)\n" +
-"\n" +
-"                console.log(`Collected Message by ${msg.author.username}: ${msg.content}`)\n" +
-"                message.reply(queryMessage)\n" +
-"                //백준 ID를 입력했으면 아이디 콜렉터 종료\n" +
-"                idCollector.stop();\n" +
-"            });\n" +
-"\n" +
-"            idCollector.on('end', collected => {\n" +
-"                userCommandStatus[message.author.id] = false;\n" +
-"\n" +
-"                //시간 초과되면 종료\n" +
-"                if (collected.size === 0) {\n" +
-"                    message.reply(\"아직 입력해주시지 않아 시간이 만료되었어요.\");\n" +
-"                }"
