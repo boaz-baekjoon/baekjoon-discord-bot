@@ -15,12 +15,44 @@ async function getPersonalizedProblems(userId, problemNum){
         });
         problem_arr = JSON.parse(response["data"])["problems"];
     } catch(error) {
-        if (error.code === 'ECONNABORTED'){
-            logger.error(error);
-        }
+        logger.error(error.message)
+    }
+    return problem_arr;
+}
+
+async function getSimilarProbWithId(probId){
+    let problem_arr = []
+    try{
+        const response = await axios.get(`${process.env.BASE_URL}/api/endpoint1` , {
+            timeout: 3000,
+            params:{
+                problem_id: probId,
+                type: 'int'
+            }
+        });
+        problem_arr = JSON.parse(response["data"])["problems"];
+    }catch(error){
+        logger.error(error.message)
+    }
+    return problem_arr;
+}
+
+async function getSimilarProbWithContext(probContext){
+    let problem_arr= []
+    try{
+        const response = await axios.get(`${process.env.BASE_URL}/api/endpoint2` , {
+            timeout: 3000,
+            params:{
+                problem_text: probContext,
+                type: 'str'
+            }
+        });
+        problem_arr = JSON.parse(response["data"])["problems"];
+    }catch(error){
+        logger.error(error.message)
     }
     return problem_arr;
 }
 
 
-module.exports = { getPersonalizedProblems }
+module.exports = { getPersonalizedProblems, getSimilarProbWithId, getSimilarProbWithContext }
