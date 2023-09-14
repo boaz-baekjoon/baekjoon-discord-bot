@@ -26,10 +26,10 @@ const getConnection = async () => { //Pool 커넥션 불러오기
     }
 }
 
-async function getBojID(conn, discord_id){
+async function getBojID(conn, discordId){
     try{
-        const [boj_id] = await conn.execute('SELECT boj_id FROM registered_user WHERE discord_id = ?', [discord_id]);
-        logger.info(`request id: ${discord_id} / returned rows: ${JSON.stringify(boj_id, null, 2)}`);
+        const [boj_id] = await conn.execute('SELECT boj_id FROM registered_user WHERE discord_id = ?', [discordId]);
+        logger.info(`request id: ${discordId} / returned rows: ${JSON.stringify(boj_id, null, 2)}`);
         return boj_id;
     }catch (error){
         logger.error(error.message)
@@ -37,49 +37,83 @@ async function getBojID(conn, discord_id){
     }
 }
 
-async function modifyBojId(conn, discord_id){}
-
-async function deleteBojId(conn, discord_id){}
-
-async function getCronWithDiscordId(conn, discord_id) {
-    const [rows] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discord_id])
-    logger.info(`request id: ${discord_id} / returned rows: ${JSON.stringify(rows, null, 2)}`);
-    return rows
-
+async function addBojId(conn, discordId, bojId){
+    try{
+        await conn.execute('INSERT INTO registered_user(discord_id, boj_id) VALUES(?, ?)', [discordId, bojId]);
+        await conn.commit();
+        logger.info(`adding BOJ ID, request: ${discordId}, registered id: ${bojId}`)
+        return true;
+    }catch(error){
+        logger.error(error.message);
+        await conn.rollback();
+        return false
+    }
 }
 
-async function insertCron(conn, discord_id, userCron){
+async function modifyBojId(conn, discordId, bojId){
     try{
-        await conn.execute('INSERT INTO user_cron(discord_id, cron) VALUES(?, ?)', [discord_id, userCron]);
-        const [cron_response] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discord_id])
+        await conn.execute('UPDATE registered_user SET boj_id = ? where discord_id = ?', [bojId, discordId]);
+        await conn.commit();
+        return true;
+    }catch(error){
+        logger.error(error.message);
+        await conn.rollback();
+        return false;
+    }
+}
+
+async function deleteBojId(conn, discordId){}
+
+async function getCronWithDiscordId(conn, discordId) {
+    try{
+        const [rows] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discordId])
+        logger.info(`request id: ${discordId} / returned rows: ${JSON.stringify(rows, null, 2)}`);
+        return rows
+    }catch(error){
+        logger.error(error.message)
+        return []
+    }
+}
+
+async function insertCron(conn, discordId, userCron){
+    try{
+        await conn.execute('INSERT INTO user_cron(discord_id, cron) VALUES(?, ?)', [discordId, userCron]);
+        const [cron_response] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discordId])
 
         if (cron_response[0]["cron"] === userCron){
-            logger.info(`${discord_id} / returned rows: ${JSON.stringify(cron_response, null, 2)}`);
+            logger.info(`${discordId} / returned rows: ${JSON.stringify(cron_response, null, 2)}`);
+            await conn.commit();
             return cron_response
         }else{
+            await conn.rollback();
             return []
         }
     }catch (error){
+        await conn.rollback();
         logger.error(error.message)
     }
 }
-async function modifyCron(conn, discord_id, userCron){
+async function modifyCron(conn, discordId, userCron){
     try{
-        await conn.execute('UPDATE user_cron SET cron = ? where discord_id = ?', [userCron, discord_id]);
+        await conn.execute('UPDATE user_cron SET cron = ? where discord_id = ?', [userCron, discordId]);
+        await conn.commit();
     }catch(error){
+        await conn.rollback();
         logger.error(error.message)
     }
 }
 
-async function deleteCron(conn, discord_id){
+async function deleteCron(conn, discordId){
     try{
-        logger.info(`Deleting cron of ${discord_id}`)
-        await conn.execute('DELETE FROM user_cron WHERE discord_id = ?', [discord_id]);
+        logger.info(`Deleting cron of ${discordId}`)
+        await conn.execute('DELETE FROM user_cron WHERE discord_id = ?', [discordId]);
+        await conn.commit();
         return 0;
     }catch(error){
         logger.error(error)
+        await conn.rollback();
         return -1;
     }
 }
 
-module.exports = { getConnection, getBojID, modifyBojId, deleteBojId, getCronWithDiscordId,insertCron, modifyCron, deleteCron}
+module.exports = { getConnection, getBojID,addBojId ,modifyBojId, deleteBojId, getCronWithDiscordId,insertCron, modifyCron, deleteCron}
