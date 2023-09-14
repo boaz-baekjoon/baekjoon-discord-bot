@@ -62,7 +62,18 @@ async function modifyBojId(conn, discordId, bojId){
     }
 }
 
-async function deleteBojId(conn, discordId){}
+async function deleteBojId(conn, discordId){
+    try{
+        logger.info(`Deleting bojId of ${discordId}`)
+        await conn.execute('DELETE FROM registered_user WHERE discord_id = ?', [discordId]);
+        await conn.commit();
+        return true;
+    }catch(error){
+        logger.error(error)
+        await conn.rollback();
+        return false;
+    }
+}
 
 async function getCronWithDiscordId(conn, discordId) {
     try{
