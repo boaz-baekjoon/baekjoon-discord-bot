@@ -65,7 +65,7 @@ client.on('messageCreate', message => {
         client.commands.get(command).execute(message, userCommandStatus, args);
     } catch (error) {
         console.error(error);
-        message.reply('명령을 실행하는 동안 오류가 발생했습니다.');
+        message.reply('알 수 없는 오류가 발생했습니다.');
     }
 });
 

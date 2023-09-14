@@ -19,7 +19,7 @@ async function getUserCron(author, message, userCommandStatus){
         const existingID = await discordUtil.getBojID(conn, message.author.id)
 
         if (existingID.length < 1) { //없다면
-            message.reply("백준 아이디를 등록하지 않았아요. !register을 통해 아이디를 등록해주세요");
+            message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
             return;
         }
 
@@ -54,7 +54,7 @@ async function getUserCron(author, message, userCommandStatus){
 
                 //시간 초과되면 종료
                 if (collected.size === 0) {
-                    message.channel.send("아직 입력해주시지 않아 시간이 만료되었어요.");
+                    message.channel.send("입력 시간이 만료되었습니다.");
                 }
             });
 
@@ -106,7 +106,7 @@ function askForTime(message, userCommandStatus, conn, isAltering) {
 
         //시간 초과되면 종료
         if (collected.size === 0) {
-            message.channel.send("아직 입력해주시지 않아 시간이 만료되었어요.");
+            message.channel.send("입력 시간이 만료되었습니다.");
         }
     });
 

@@ -58,7 +58,7 @@ module.exports = {
             const existingID = await discordUtil.getBojID(conn, message.author.id)
 
             if (existingID.length < 1) { //없다면
-                message.reply("백준 아이디를 등록하지 않았아요. !register을 통해 아이디를 등록해주세요");
+                message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
                 return;
             }
 

@@ -17,13 +17,13 @@ async function alterId(conn, message) {
     })
     idCollector.on('end', collected => {
         if (collected.size === 0){
-            message.reply("아직 입력해주시지 않아 시간이 만료되었어요.")
+            message.reply("입력 시간이 만료되었습니다.")
         }
     })
 }
 
 async function registerId(conn, message) {
-    message.reply("아이디를 입력해주세요");
+    message.reply("아이디를 입력해주세요.");
     const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
     const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
     idCollector.on('collect', async msg => {
@@ -37,7 +37,7 @@ async function registerId(conn, message) {
     })
     idCollector.on('end', collected => {
         if (collected.size === 0){
-            message.reply("아직 입력해주시지 않아 시간이 만료되었어요.")
+            message.reply("입력 시간이 만료되었습니다.")
         }
     })
 }
@@ -72,7 +72,7 @@ module.exports = {
                         if (response){
                             message.reply("정상적으로 삭제되었습니다.")
                         }else{
-                            message.reply("알 수 없는 오류가 발생했습니다")
+                            message.reply("알 수 없는 오류가 발생했습니다.")
                         }
                     }else if (msg.content === '취소'){
                         message.reply("명령을 취소하셨습니다.");
@@ -80,7 +80,7 @@ module.exports = {
                 })
                 responseCollector.on('end', collected => {
                     if (collected.size === 0){
-                        message.reply("아직 입력해주시지 않아 시간이 만료되었어요.")
+                        message.reply("입력 시간이 만료되었습니다.")
                     }
                     userCommandStatus[message.author.id] = false
                 })
