@@ -148,8 +148,17 @@ async function insertUserCron(discordId, userInput, conn, isAltering) {
 module.exports = {
     name: 'daily',
     async execute(message, userCommandStatus, args) {
-        const { author } = message;
-        await getUserCron(author, message, userCommandStatus);
+        if (userCommandStatus[message.author.id]){
+            return;
+        }
+        try{
+            userCommandStatus[message.author.id] = true
+            const { author } = message;
+            await getUserCron(author, message, userCommandStatus);
+        }catch(error){
+            logger.error(error)
+        }
+
 
     }
 };

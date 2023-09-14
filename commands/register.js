@@ -68,6 +68,7 @@ module.exports = {
                 responseCollector.on('collect', async msg => {
                     if (msg.content === '변경'){
                         await alterId(conn, message)
+                        userCommandStatus[message.author.id] = false
                     }else if (msg.content === '삭제'){
                         const response = await discord_util.deleteBojId(conn, message.author.id)
                         if (response){
@@ -83,6 +84,7 @@ module.exports = {
                     if (collected.size === 0){
                         message.reply("아직 입력해주시지 않아 시간이 만료되었어요.")
                     }
+                    userCommandStatus[message.author.id] = false
                 })
             }else {
                 await registerId(conn, message)
@@ -91,7 +93,6 @@ module.exports = {
             logger.error(error.message)
         }finally {
             conn.release();
-            userCommandStatus[message.author.id] = false;
         }
     },
 };
