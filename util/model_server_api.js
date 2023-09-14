@@ -6,22 +6,21 @@ const {BojProblem} = require("../models/problem");
 dotenv.config()
 async function getPersonalizedProblems(userId, problemNum){
     let problem_arr = [];
-    const response = await axios.get(`${process.env.BASE_URL}/api/random` , {
-        timeout: 3000,
-        params:{
-            user_id: userId,
-            num: problemNum
-        }
-    }).then(res =>{
-        console.log(res)
-        problem_arr = res.data[problems];
-    }).catch(error => {
+    try {
+        const response = await axios.get(`${process.env.BASE_URL}/api/random` , {
+            timeout: 3000,
+            params:{
+                user_id: userId,
+                num: problemNum
+            }
+        });
+        problem_arr = JSON.parse(response["data"])["problems"];
+    } catch(error) {
         if (error.code === 'ECONNABORTED'){
-            logger.error(error)
+            logger.error(error);
         }
-    }).finally(() => {
-        return problem_arr;
-    })
+    }
+    return problem_arr;
 }
 
 

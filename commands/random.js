@@ -2,14 +2,15 @@ const {EmbedBuilder} = require('discord.js')
 const axios = require('axios')
 const {BojProblem, getErrorMsg, getProblemErrorMsg} = require("../models/problem");
 const logger = require("../logger")
-const {getPersonalizedProblems} = require("../util/model_server_api");
+const modelUtil = require("../util/model_server_api");
 const discordUtil = require("../util/discord_db");
 
 
 async function getRecommendedProblem(user_id) {
     try{
         let bojProblem = new BojProblem()
-        const problem_arr = await getPersonalizedProblems(user_id,1)
+        const problem_arr = await modelUtil.getPersonalizedProblems(user_id,1)
+        console.log(problem_arr)
         if (problem_arr.length === 0){
             return getRandomProblem()
         }
