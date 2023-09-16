@@ -56,6 +56,7 @@ client.on('messageCreate', message => {
     //올바른 명령어가 아니면 무시
     if (!client.commands.has(command)) {
         console.log("Command Not Found")
+        message.reply("알 수 없는 명령어입니다. 명령어를 확인하시려면 !help를 입력해주세요.")
         return;
     }
 
