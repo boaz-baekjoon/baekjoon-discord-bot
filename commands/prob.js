@@ -6,8 +6,8 @@ const discordUtil = require("../util/discord_db");
 
 
 async function getRecommendedProblem(user_id) {
+    let bojProblem = new BojProblem()
     try{
-        let bojProblem = new BojProblem()
         const problem_arr = await modelUtil.getPersonalizedProblems(user_id,1)
         console.log(problem_arr)
         if (problem_arr.length === 0){
@@ -19,11 +19,11 @@ async function getRecommendedProblem(user_id) {
             },
         });
         bojProblem.setProperties(response.data.problemId, response.data.titleKo, response.data.level, response.data.tags)
-        return bojProblem;
     }catch(error){
+        bojProblem = getRandomProblem()
         logger.error(error.message)
     }
-
+    return bojProblem;
 }
 
 async function getRandomProblem(attempts = 0) {
@@ -75,5 +75,5 @@ module.exports = {
             conn.release()
         }
 
-    }, getRandomProblem
+    }, getRecommendedProblem
 };
