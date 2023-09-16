@@ -1,5 +1,5 @@
 const { getConnection } = require('../util/discord_db')
-const { getRandomProblem } = require('../commands/prob')
+const { getRecommendedProblem } = require('../commands/prob')
 const logger = require("../logger")
 async function sendRandomMessage(client) {
     let conn;
@@ -19,7 +19,8 @@ async function sendRandomMessage(client) {
         const currentTime = `${currentHour} ${currentMinute}`
         logger.verbose(`Time Switched: ${currentTime}`)
 
-        const [users] = await conn.execute('SELECT discord_id FROM user_cron WHERE cron = ?',[currentTime]);
+        const [users] = await conn.execute('SELECT * FROM registered_user WHERE discord_id IN ' +
+            '(SELECT discord_id from user_cron where cron = ?)',[currentTime]);
 
         if (!users || users.length === 0) {
             logger.verbose(`No user registered on ${currentTime}`)
@@ -27,8 +28,8 @@ async function sendRandomMessage(client) {
         }
 
         for (let user of users) {
-            logger.verbose(`Target user notified: ${user.discord_id}`)
-            const randProblem = await getRandomProblem()
+            logger.verbose(`Target user notified: ${user.boj_id}`)
+            const randProblem = await getRecommendedProblem(user.boj_id)
             const randProblemMsg = randProblem.getEmbedMsg("일일 문제입니다.")
 
             const targetUser = await client.users.fetch(user.discord_id)
