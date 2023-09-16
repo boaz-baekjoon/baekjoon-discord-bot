@@ -1,10 +1,10 @@
-const { getConnection } = require('../util/discord_db')
+const discordUtil = require('../util/discord_db')
 const { getRecommendedProblem } = require('../commands/prob')
 const logger = require("../logger")
 async function sendRandomMessage(client) {
     let conn;
     try {
-        conn = await getConnection();
+        conn = await discordUtil.getConnection();
         logger.verbose(conn)
 
         if (!conn) {
@@ -19,13 +19,7 @@ async function sendRandomMessage(client) {
         const currentTime = `${currentHour} ${currentMinute}`
         logger.verbose(`Time Switched: ${currentTime}`)
 
-        const [users] = await conn.execute('SELECT * FROM registered_user WHERE discord_id IN ' +
-            '(SELECT discord_id from user_cron where cron = ?)',[currentTime]);
-
-        if (!users || users.length === 0) {
-            logger.verbose(`No user registered on ${currentTime}`)
-            return;
-        }
+        const users = await discordUtil.getUserWithCurrentCron(conn, currentTime)
 
         for (let user of users) {
             logger.verbose(`Target user notified: ${user.boj_id}`)

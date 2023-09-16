@@ -75,6 +75,22 @@ async function deleteBojId(conn, discordId){
     }
 }
 
+async function getUserWithCurrentCron(conn, currentTime){
+    try{
+        const [users] = await conn.execute('SELECT * FROM registered_user WHERE discord_id IN ' +
+            '(SELECT discord_id from user_cron where cron = ?)',[currentTime]);
+
+        if (!users || users.length === 0) {
+            logger.verbose(`No user registered on ${currentTime}`)
+            return [];
+        }
+        return users;
+    }catch(error){
+        logger.error(error);
+        return [];
+    }
+}
+
 async function getCronWithDiscordId(conn, discordId) {
     try{
         const [rows] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discordId])
@@ -127,4 +143,4 @@ async function deleteCron(conn, discordId){
     }
 }
 
-module.exports = { getConnection, getBojID,addBojId ,modifyBojId, deleteBojId, getCronWithDiscordId,insertCron, modifyCron, deleteCron}
+module.exports = { getConnection, getBojID,addBojId ,modifyBojId, deleteBojId,getUserWithCurrentCron ,getCronWithDiscordId, insertCron, modifyCron, deleteCron}
