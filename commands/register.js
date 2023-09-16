@@ -1,36 +1,22 @@
 const discord_util = require('../util/discord_db')
 const logger = require('../logger')
 
-
-async function alterId(conn, message) {
-    message.reply("아이디를 입력해주세요.")
-    const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
-    const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
-    idCollector.on('collect', async msg => {
-        const bojId = msg.content;
-        const response = discord_util.modifyBojId(conn, message.author.id, bojId);
-        if (response){
-            message.reply("정상적으로 변경되었습니다.")
-        }else{
-            message.reply("알 수 없는 오류가 발생했습니다.")
-        }
-    })
-    idCollector.on('end', collected => {
-        if (collected.size === 0){
-            message.reply("입력 시간이 만료되었습니다.")
-        }
-    })
-}
-
-async function registerId(conn, message) {
+async function registerId(conn, message, isAltering) {
     message.reply("아이디를 입력해주세요.");
     const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
     const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
     idCollector.on('collect', async msg => {
         const bojId = msg.content;
-        const response = discord_util.addBojId(conn, message.author.id, bojId);
+        let response;
+
+        if(isAltering === true){
+            response = discord_util.modifyBojId(conn, message.author.id, bojId);
+        }else{
+            response = discord_util.addBojId(conn, message.author.id, bojId);
+        }
+
         if (response){
-            message.reply("정상적으로 등록되었습니다.")
+            message.reply(isAltering ? "정상적으로 변경되었습니다." : "정상적으로 등록되었습니다.")
         }else{
             message.reply("알 수 없는 오류가 발생했습니다.")
         }
@@ -65,7 +51,7 @@ module.exports = {
 
                 responseCollector.on('collect', async msg => {
                     if (msg.content === '변경'){
-                        await alterId(conn, message)
+                        await registerId(conn, message, true)
                         userCommandStatus[message.author.id] = false
                     }else if (msg.content === '삭제'){
                         const response = await discord_util.deleteBojId(conn, message.author.id)
@@ -85,7 +71,7 @@ module.exports = {
                     userCommandStatus[message.author.id] = false
                 })
             }else {
-                await registerId(conn, message)
+                await registerId(conn, message, false)
             }
         }catch(error){
             logger.error(error.message)
