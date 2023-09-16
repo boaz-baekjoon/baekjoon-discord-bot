@@ -1,7 +1,7 @@
 const discordUtil = require('../util/discord_db')
 const { getRecommendedProblem } = require('../commands/prob')
 const logger = require("../logger")
-async function sendRandomMessage(client) {
+async function sendDailyProblem(client) {
     let conn;
     try {
         conn = await discordUtil.getConnection();
@@ -41,4 +41,4 @@ async function sendRandomMessage(client) {
 
 }
 
-module.exports = { sendRandomMessage }
+module.exports = { sendDailyProblem }
