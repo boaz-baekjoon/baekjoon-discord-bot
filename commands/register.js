@@ -72,6 +72,7 @@ module.exports = {
                 })
             }else {
                 await registerId(conn, message, false)
+                userCommandStatus[message.author.id] = false
             }
         }catch(error){
             logger.error(error.message)
