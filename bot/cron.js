@@ -24,7 +24,7 @@ async function sendDailyProblem(client) {
         for (let user of users) {
             logger.verbose(`Target user notified: ${user.boj_id}`)
             const randProblem = await getRecommendedProblem(user.boj_id)
-            const randProblemMsg = randProblem.getEmbedMsg("일일 문제입니다.")
+            const randProblemMsg = randProblem.getEmbedMsg(`일일 문제: ${randProblem.problemId} - ${randProblem.title}`)
 
             const targetUser = await client.users.fetch(user.discord_id)
             targetUser.send({embeds: [randProblemMsg]})
