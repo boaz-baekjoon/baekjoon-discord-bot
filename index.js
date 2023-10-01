@@ -3,6 +3,7 @@ const fs = require('fs');
 const { sendDailyProblem } = require('./bot/cron')
 const cron = require("node-cron");
 const logger = require("./logger")
+const dotenv = require('dotenv');
 
 const client = new Client({
     intents: [
@@ -14,6 +15,7 @@ const client = new Client({
     ],
 });
 const config = require("./config.json")
+dotenv.config();
 
 client.config = config;
 client.commands = new Collection();

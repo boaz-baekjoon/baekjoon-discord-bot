@@ -28,6 +28,7 @@ RDS_ENDPOINT=
 RDS_USER=
 RDS_PASSWORD=
 RDS_DB=
+BASE_URL=   #You need to create your own model server and put its address
 ```
 - Type `npm test` to test the connection with your RDS
 - Type `npm start` to start the bot
@@ -35,25 +36,11 @@ RDS_DB=
 
 ### 📦 Using Docker
 For those who prefer using Docker container, follow the instruction:
-- Fill the environment variable in the Dockerfile
-```
-ENV DISCORD_TOKEN <your discord bot token>
-
-ENV RDS_ENDPOINT <your endpoint>
-
-ENV RDS_USER <your username>
-
-ENV RDS_PASSWORD <your password>
-
-ENV RDS_DB <your db name>
-
-ENV TZ <your region timezone> # Should not delete this line when using .env instead
-```
-- Or, remove the commands above in Dockerfile and just create .env
-
-- Build an image and run a container
+- Create .env file and fill the value explained above.
+- Build an image and run a container.
+- Make sure to set the timezone in order to properly send daily problem.
 ```
 docker build -t <image name> .
-docker run -d <image name>
+docker run -d <image name> -e TZ=<your time zone>
 ```
 
