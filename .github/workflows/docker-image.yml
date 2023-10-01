@@ -40,12 +40,19 @@ jobs:
       run: npm ci
 
     - name: Run Jest
-      run: npm test --testPathPattern="^(?!.*aws_rds\.test\.js).*"
+      run: npm test
 
-    - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }} .
-
-    - name: Dockerhub Push
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
-
+    - name: Docker Login
+      uses: docker/login-action@v3.0.0
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        logout: false
+        
+    - name: build and release to DockerHub
+      run: |
+        docker build -t ${{ secrets.PROJECT_NAME }} .
+        docker tag ${{ secrets.PROJECT_NAME }}:latest ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+    
       
