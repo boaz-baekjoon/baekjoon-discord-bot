@@ -1,0 +1,30 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v3.8.1
+      with:
+        node-version: "18.x"
+
+    - name: npm_install
+      run: npm install
+
+    - name: Run Jest
+      uses: stefanoeb/jest-action@1.0.4
+
+    - name: Build Docker image
+      run: docker build -t boj-bot .
