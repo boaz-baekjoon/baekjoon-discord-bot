@@ -20,6 +20,22 @@ jobs:
       with:
         node-version: "18.x"
 
+    - name: Generate ENV file
+      run: |
+        echo "DISCORD_TOKEN=$DISCORD_TOKEN" >> .env
+        echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> .env
+        echo "RDS_USER=$RDS_USER" >> .env
+        echo "RDS_PASSWORD=$RDS_PASSWORD" >> .env
+        echo "RDS_DB=$RDS_DB" >> .env
+        echo "BASE_URL=$BASE_URL" >> .env
+      env:
+        DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
+        RDS_USER: ${{ secrets.RDS_USER }}
+        RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+        RDS_DB: ${{ secrets.RDS_DB }}
+        BASE_URL: ${{ secrets.BASE_URL }}
+
     - name: npm ci
       run: npm ci
 
