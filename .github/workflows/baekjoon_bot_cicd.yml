@@ -1,4 +1,4 @@
-name: Docker Image CI/CD
+name: Baekjoon-Bot CI/CD
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       with:
         node-version: "18.x"
 
-    - name: npm ci
+    - name: Install modules
       run: npm ci
 
     - name: Run Jest
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to EC2
+      - name: Deploy to EC2 / Check status
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
