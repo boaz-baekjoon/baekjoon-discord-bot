@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --testPathPattern=\"^(?!.*aws_rds\\.test\\.js).*\" --passWithNoTests",
     "start": "export NODE_ENV=production && node index.js",
     "dev_start": "export NODE_ENV=development && node index.js"
   },

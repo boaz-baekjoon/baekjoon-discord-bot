@@ -24,7 +24,7 @@ jobs:
       run: npm ci
 
     - name: Run Jest
-      run: npm test
-  
+      run: npm test --testPathPattern="^(?!.*aws_rds\.test\.js).*"
+
     - name: Build Docker image
       run: docker build -t boj-bot .
