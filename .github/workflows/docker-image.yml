@@ -24,7 +24,7 @@ jobs:
       run: npm install
 
     - name: Run Jest
-      uses: stefanoeb/jest-action@1.0.4
+      run: jest
 
     - name: Build Docker image
       run: docker build -t boj-bot .
