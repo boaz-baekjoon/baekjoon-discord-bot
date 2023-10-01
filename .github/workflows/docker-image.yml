@@ -20,11 +20,11 @@ jobs:
       with:
         node-version: "18.x"
 
-    - name: npm_install
-      run: npm install
+    - name: npm ci
+      run: npm ci
 
     - name: Run Jest
-      uses: stefanoeb/jest-action@1.0.4
+      run: npm test
   
     - name: Build Docker image
       run: docker build -t boj-bot .
