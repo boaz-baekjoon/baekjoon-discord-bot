@@ -49,13 +49,6 @@ jobs:
     steps:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
-        env:
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-          RDS_USER: ${{ secrets.RDS_USER }}
-          RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
-          RDS_DB: ${{ secrets.RDS_DB }}
-          BASE_URL: ${{ secrets.BASE_URL }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -67,12 +60,12 @@ jobs:
             sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
 
-            echo "DISCORD_TOKEN=$DISCORD_TOKEN" > env.list
-            echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> env.list
-            echo "RDS_USER=$RDS_USER" >> env.list
-            echo "RDS_PASSWORD=$RDS_PASSWORD" >> env.list
-            echo "RDS_DB=$RDS_DB" >> env.list
-            echo "BASE_URL=$BASE_URL" >> env.list
+            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > env.list
+            echo "RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}" >> env.list
+            echo "RDS_USER=${{ secrets.RDS_USER }}" >> env.list
+            echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> env.list
+            echo "RDS_DB=${{ secrets.RDS_DB }}" >> env.list
+            echo "BASE_URL=${{ secrets.BASE_URL }}" >> env.list
             echo "TZ=Asia/Seoul" >> env.list
             
             sudo docker run -d --env-file env.list --name boj-bot ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
