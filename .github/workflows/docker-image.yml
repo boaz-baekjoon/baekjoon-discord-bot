@@ -43,4 +43,9 @@ jobs:
       run: npm test --testPathPattern="^(?!.*aws_rds\.test\.js).*"
 
     - name: Build Docker image
-      run: docker build -t boj-bot .
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }} .
+
+    - name: Dockerhub Push
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
+
+      
