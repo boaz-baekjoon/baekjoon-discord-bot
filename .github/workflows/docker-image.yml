@@ -71,6 +71,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
 
           script: |
+            sudo usermod -aG docker ${USER}
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             sudo docker kill ${{ secrets.PROJECT_NAME }}
             sudo docker rm -f ${{ secrets.PROJECT_NAME }}
