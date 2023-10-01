@@ -20,22 +20,6 @@ jobs:
       with:
         node-version: "18.x"
 
-    - name: Generate ENV file
-      run: |
-        echo "DISCORD_TOKEN=$DISCORD_TOKEN" >> .env
-        echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> .env
-        echo "RDS_USER=$RDS_USER" >> .env
-        echo "RDS_PASSWORD=$RDS_PASSWORD" >> .env
-        echo "RDS_DB=$RDS_DB" >> .env
-        echo "BASE_URL=$BASE_URL" >> .env
-      env:
-        DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-        RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-        RDS_USER: ${{ secrets.RDS_USER }}
-        RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
-        RDS_DB: ${{ secrets.RDS_DB }}
-        BASE_URL: ${{ secrets.BASE_URL }}
-
     - name: npm ci
       run: npm ci
 
@@ -65,6 +49,13 @@ jobs:
     steps:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
+          RDS_USER: ${{ secrets.RDS_USER }}
+          RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+          RDS_DB: ${{ secrets.RDS_DB }}
+          BASE_URL: ${{ secrets.BASE_URL }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -72,9 +63,17 @@ jobs:
 
           script: |
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-            sudo docker kill ${{ secrets.PROJECT_NAME }}
-            sudo docker rm -f ${{ secrets.PROJECT_NAME }}
+            sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest --format="{{.ID}}"))
             sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+
+            echo "DISCORD_TOKEN=$DISCORD_TOKEN" > env.list
+            echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> env.list
+            echo "RDS_USER=$RDS_USER" >> env.list
+            echo "RDS_PASSWORD=$RDS_PASSWORD" >> env.list
+            echo "RDS_DB=$RDS_DB" >> env.list
+            echo "BASE_URL=$BASE_URL" >> env.list
+            echo "TZ=Asia/Seoul" >> env.list
             
-            sudo docker run -d --name boj-bot ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest -e TZ=Asia/Seoul
+            sudo docker run -d --env-file env.list --name boj-bot ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+            sudo rm -rf env.list
