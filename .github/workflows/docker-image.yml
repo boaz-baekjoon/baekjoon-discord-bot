@@ -76,4 +76,5 @@ jobs:
             echo "TZ=Asia/Seoul" >> env.list
             
             sudo docker run -d --env-file env.list --name boj-bot ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
-            sudo rm -rf env.list
+            sleep 10s
+            sudo docker ps | grep ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
