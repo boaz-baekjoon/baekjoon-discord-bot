@@ -23,17 +23,17 @@ jobs:
     - name: Install modules
       run: npm ci
 
-    - name: Run Jest
+    - name: Unit test
       run: npm test
 
-    - name: Docker Login
+    - name: Docker login
       uses: docker/login-action@v3.0.0
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
         logout: true
         
-    - name: Build and release to DockerHub
+    - name: Build and push to DockerHub
       run: |
         docker build -t ${{ secrets.PROJECT_NAME }} .
         docker tag ${{ secrets.PROJECT_NAME }}:latest ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to EC2 / Check status
+      - name: Deploy to EC2 / Check bot status
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
