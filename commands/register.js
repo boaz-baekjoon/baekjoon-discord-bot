@@ -1,7 +1,7 @@
 const discord_util = require('../util/discord_db')
 const logger = require('../logger')
 
-async function registerId(conn, message, isAltering) {
+async function registerId(conn, message, isAltering, userCommandStatus) {
     message.reply("아이디를 입력해주세요.");
     const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
     const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
@@ -25,6 +25,7 @@ async function registerId(conn, message, isAltering) {
         if (collected.size === 0){
             message.reply("입력 시간이 만료되었습니다.")
         }
+        userCommandStatus[message.author.id] = false
     })
 }
 
@@ -51,8 +52,7 @@ module.exports = {
 
                 responseCollector.on('collect', async msg => {
                     if (msg.content === '변경'){
-                        await registerId(conn, message, true)
-                        userCommandStatus[message.author.id] = false
+                        await registerId(conn, message, true, userCommandStatus)
                     }else if (msg.content === '삭제'){
                         const response = await discord_util.deleteBojId(conn, message.author.id)
                         if (response){
@@ -71,8 +71,7 @@ module.exports = {
                     userCommandStatus[message.author.id] = false
                 })
             }else {
-                await registerId(conn, message, false)
-                userCommandStatus[message.author.id] = false
+                await registerId(conn, message, false, userCommandStatus)
             }
         }catch(error){
             logger.error(error.message)

@@ -57,6 +57,10 @@ module.exports = {
     name: '문제 랜덤 추천',
     async execute(message, userCommandStatus, args) {
         let conn;
+        if (userCommandStatus[message.author.id]) { //해당 사용자가 이미 다른 명령어를 실행하고 있는 경우
+            return;
+        }
+
         try{
             conn = await discordUtil.getConnection()
 
