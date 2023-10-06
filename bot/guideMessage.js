@@ -2,7 +2,7 @@ const {EmbedBuilder} = require("discord.js");
 const embedWelcome = new EmbedBuilder()
     .setColor(0x3498DB)
     .setAuthor({name: 'BOJ Bot'})
-    .setTitle("안녕하세요 백준 봇입니다 :) 하핫 CI/CD 구축 완성!")
+    .setTitle("안녕하세요 백준 봇입니다 :)")
     .setDescription("원하시는 서비스를 !{명령어} 형식으로 입력해주세요!")
     .addFields(
         { name: '!register', value: '백준 봇 서비스를 사용하기 위해 백준 아이디를 등록합니다.', inline: false },
