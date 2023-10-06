@@ -66,6 +66,7 @@ async function getUserCron(author, message, userCommandStatus){
         logger.error(`Error: ${error} / ${author.id}`)
     }finally {
         if (conn) await conn.release();
+        userCommandStatus[message.author.id] = false
     }
 
 }
