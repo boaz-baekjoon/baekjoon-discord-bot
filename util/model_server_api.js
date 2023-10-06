@@ -3,17 +3,19 @@ const logger = require("../logger")
 const dotenv = require("dotenv")
 
 dotenv.config()
-async function getPersonalizedProblems(userId, problemNum){
+async function getSinglePersonalizedProblems(userId, problemNum){
     let problem_arr = [];
     try {
-        const response = await axios.get(`${process.env.BASE_URL}/api/random` , {
-            timeout: 3000,
-            params:{
-                user_id: userId,
-                num: problemNum
-            }
+        const response = await axios.post(`${process.env.BASE_URL}/baekjun/user_id` , {
+                user_id_list: [userId],
+                problem_num: problemNum
+            },
+            {
+                timeout: 3000
         });
-        problem_arr = JSON.parse(response["data"])["problems"];
+        if (Array.isArray(response.data[userId])) {
+            problem_arr = response.data[userId];
+        }
     } catch(error) {
         logger.error(error.message)
     }
@@ -55,4 +57,4 @@ async function getSimilarProbWithContext(probContext){
 }
 
 
-module.exports = { getPersonalizedProblems, getSimilarProbWithId, getSimilarProbWithContext }
+module.exports = { getSinglePersonalizedProblems, getSimilarProbWithId, getSimilarProbWithContext }

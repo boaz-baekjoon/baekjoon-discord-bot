@@ -8,10 +8,10 @@ const discordUtil = require("../util/discord_db");
 async function getRecommendedProblem(user_id) {
     let bojProblem = new BojProblem()
     try{
-        const problem_arr = await modelUtil.getPersonalizedProblems(user_id,1)
-        console.log(problem_arr)
+        const problem_arr = await modelUtil.getSinglePersonalizedProblems(user_id,1)
         if (problem_arr.length === 0){
-            return getRandomProblem()
+            logger.warn(`${user_id}/ 모델 서버 오류로 인한 랜덤 문제 반환`)
+            return await getRandomProblem()
         }
         const response = await axios.get('https://solved.ac/api/v3/problem/show', {
             params: {
@@ -20,13 +20,15 @@ async function getRecommendedProblem(user_id) {
         });
         bojProblem.setProperties(response.data.problemId, response.data.titleKo, response.data.level, response.data.tags)
     }catch(error){
-        bojProblem = getRandomProblem()
-        logger.error(error.message)
+        logger.error(error)
+        logger.warn(`${user_id}/ 모델 서버 오류로 인한 랜덤 문제 반환`)
+        bojProblem = await getRandomProblem()
     }
     return bojProblem;
 }
 
 async function getRandomProblem(attempts = 0) {
+    let bojProblem = new BojProblem()
     if (attempts >= 5) {
         logger.warn("최대 요청 횟수 (5회) 초과")
         return getProblemErrorMsg("알 수 없는 오류가 발생했습니다.")
@@ -39,7 +41,10 @@ async function getRandomProblem(attempts = 0) {
                 problemId: randomId,
             },
         });
-        return new BojProblem(response.data.problemId, response.data.titleKo, response.data.level, response.data.tags);
+        console.log(response.data)
+        bojProblem.setProperties(response.data.problemId, response.data.titleKo, response.data.level, response.data.tags)
+
+        return bojProblem
 
     } catch (error) {
         //가끔 번호가 배정이 안된 경우가 있음
@@ -61,7 +66,6 @@ module.exports = {
                 message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
                 return;
             }
-
             const randProblem = await getRecommendedProblem(existingID[0]['boj_id']);
             logger.info(`반환 성공 : ${message.author.id}에게 ${randProblem.problemId}번 문제 반환`)
 
@@ -69,7 +73,7 @@ module.exports = {
 
             message.channel.send({embeds: [randProblemMsg]})
         }catch (error){
-            logger.error(error.message)
+            logger.error(error)
             message.reply("알 수 없는 오류가 발생했습니다.")
         }finally {
             conn.release()
