@@ -25,14 +25,15 @@ async function getSinglePersonalizedProblems(userId, problemNum){
 async function getSimilarProbWithId(probId){
     let problem_arr = []
     try{
-        const response = await axios.get(`${process.env.BASE_URL}/api/endpoint1` , {
+        const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_id` , {
             timeout: 3000,
             params:{
                 problem_id: probId,
-                type: 'int'
             }
         });
-        problem_arr = JSON.parse(response["data"])["problems"];
+        if (Array.isArray(response.data['problems'])) {
+            problem_arr = response.data['problems'];
+        }
     }catch(error){
         logger.error(error.message)
     }
@@ -42,14 +43,15 @@ async function getSimilarProbWithId(probId){
 async function getSimilarProbWithContext(probContext){
     let problem_arr= []
     try{
-        const response = await axios.get(`${process.env.BASE_URL}/api/endpoint2` , {
+        const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_text` , {
             timeout: 3000,
             params:{
                 problem_text: probContext,
-                type: 'str'
             }
         });
-        problem_arr = JSON.parse(response["data"])["problems"];
+        if (Array.isArray(response.data['problems'])) {
+            problem_arr = response.data['problems'];
+        }
     }catch(error){
         logger.error(error.message)
     }
