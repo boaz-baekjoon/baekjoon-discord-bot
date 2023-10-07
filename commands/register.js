@@ -2,7 +2,7 @@ const discord_util = require('../util/discord_db')
 const logger = require('../logger')
 
 async function registerId(conn, message, isAltering, userCommandStatus) {
-    message.reply("아이디를 입력해주세요.");
+    message.reply("등록하실 백준 아이디를 입력해주세요.");
     const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
     const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
     idCollector.on('collect', async msg => {
