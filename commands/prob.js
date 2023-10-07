@@ -42,7 +42,7 @@ async function getRandomProblem(attempts = 0) {
             },
         });
         console.log(response.data)
-        bojProblem.setProperties(response.data.problemId, response.data.titleKo, response.data.level, response.data.tags)
+        bojProblem.setProperties(response.data.problemId, response.data.titleKo + " (모델 서버 오류로 인한 랜덤 문제)", response.data.level, response.data.tags)
 
         return bojProblem
 
@@ -54,7 +54,7 @@ async function getRandomProblem(attempts = 0) {
     }
 }
 module.exports = {
-    name: '문제 랜덤 추천',
+    name: '문제 맞춤형 추천',
     async execute(message, userCommandStatus, args) {
         let conn;
         if (userCommandStatus[message.author.id]) { //해당 사용자가 이미 다른 명령어를 실행하고 있는 경우
@@ -73,7 +73,7 @@ module.exports = {
             const randProblem = await getRecommendedProblem(existingID[0]['boj_id']);
             logger.info(`반환 성공 : ${message.author.id}에게 ${randProblem.problemId}번 문제 반환`)
 
-            const randProblemMsg = randProblem.getEmbedMsg("랜덤 문제입니다.")
+            const randProblemMsg = randProblem.getEmbedMsg("개인 맞춤형 문제입니다.")
 
             message.channel.send({embeds: [randProblemMsg]})
         }catch (error){
