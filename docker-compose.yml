@@ -7,7 +7,7 @@ services:
     env_file:
       - env.list
     volumes:
-      - /logs:/app/logs
+      - ubuntu_log_volume:/app/logs
 
   boj-blue-service:
     container_name: boj-blue-container
@@ -15,4 +15,7 @@ services:
     env_file:
       - env.list
     volumes:
-      - /logs:/app/logs
+      - ubuntu_log_volume:/app/logs
+volumes:
+  ubuntu_log_volume:
+    external: true
