@@ -10,8 +10,6 @@ if [ -z "$IS_GREEN"  ];then # blue라면
   echo "2. green container up"
   sudo docker-compose --env-file=env.list up -d boj-green-service  # green 컨테이너 실행
 
-  sleep 5 #컨테이너 실행 5초 지연
-
   echo "3. blue container down"
   sudo docker-compose stop boj-blue-service
 
@@ -23,8 +21,6 @@ else
 
   echo "2. blue container up"
   sudo docker-compose --env-file=env.list up -d boj-blue-service
-
-  sleep 5
 
   echo "3. green container down"
   sudo docker-compose stop boj-green-service
