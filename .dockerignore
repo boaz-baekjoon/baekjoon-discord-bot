@@ -1,0 +1,9 @@
+**.env
+.gitignore
+logs
+.idea
+.github
+deploy.sh
+docker-compose.yml
+README.md
+node_modules
