@@ -4,27 +4,15 @@ services:
   boj-green-service:
     container_name: boj-green-container
     image: ${DOCKERHUB_USERNAME}/${PROJECT_NAME}:latest
-    environment:
-      DISCORD_TOKEN: ${DISCORD_TOKEN}
-      RDS_ENDPOINT: ${RDS_ENDPOINT}
-      RDS_USER: ${RDS_USER}
-      RDS_PASSWORD: ${RDS_PASSWORD}
-      RDS_DB: ${RDS_DB}
-      BASE_URL: ${BASE_URL}
-      TZ: Asia/Seoul
+    env_file:
+      - env.list
     volumes:
       - /logs:/app/logs
 
   boj-blue-service:
     container_name: boj-blue-container
     image: ${DOCKERHUB_USERNAME}/${PROJECT_NAME}:latest
-    environment:
-      DISCORD_TOKEN: ${DISCORD_TOKEN}
-      RDS_ENDPOINT: ${RDS_ENDPOINT}
-      RDS_USER: ${RDS_USER}
-      RDS_PASSWORD: ${RDS_PASSWORD}
-      RDS_DB: ${RDS_DB}
-      BASE_URL: ${BASE_URL}
-      TZ: Asia/Seoul
+    env_file:
+      - env.list
     volumes:
       - /logs:/app/logs
