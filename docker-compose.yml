@@ -1,0 +1,23 @@
+version: 3.x
+
+green:
+  container_name: boj-bot-green
+  image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+  environment:
+    DISCORD_TOKEN: ${DISCORD_TOKEN}
+    RDS_ENDPOINT: ${RDS_ENDPOINT}
+    RDS_USER: ${secrets.RDS_USER}
+    RDS_PASSWORD: ${secrets.RDS_PASSWORD}
+    RDS_DB: ${secrets.RDS_DB}
+    BASE_URL: ${secrets.BASE_URL}
+
+blue:
+  container_name: boj-bot-blue
+  image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+  environment:
+    DISCORD_TOKEN: ${DISCORD_TOKEN}
+    RDS_ENDPOINT: ${RDS_ENDPOINT}
+    RDS_USER: ${secrets.RDS_USER}
+    RDS_PASSWORD: ${secrets.RDS_PASSWORD}
+    RDS_DB: ${secrets.RDS_DB}
+    BASE_URL: ${secrets.BASE_URL}
