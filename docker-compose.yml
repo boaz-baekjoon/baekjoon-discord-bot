@@ -11,7 +11,8 @@ services:
       RDS_PASSWORD: ${RDS_PASSWORD}
       RDS_DB: ${RDS_DB}
       BASE_URL: ${BASE_URL}
-
+    volumes:
+      - /logs:/app/logs
 
   boj-blue-service:
     container_name: boj-blue-container
@@ -23,3 +24,5 @@ services:
       RDS_PASSWORD: ${RDS_PASSWORD}
       RDS_DB: ${RDS_DB}
       BASE_URL: ${BASE_URL}
+    volumes:
+      - /logs:/app/logs
