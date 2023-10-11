@@ -74,6 +74,6 @@ jobs:
             echo "TZ=Asia/Seoul" >> env.list
             
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.PROJECT_NAME }}
-            chmod 777 ./deploy.sh
-            ./deploy.sh
-            docker image prune -f
+            sudo chmod 777 ./deploy.sh
+            sudo bash ./deploy.sh
+            sudo docker image prune -f
