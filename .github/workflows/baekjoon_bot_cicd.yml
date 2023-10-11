@@ -45,19 +45,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to EC2 / Check bot status
+      - name: Send deploy.sh
         uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "./deploy.sh"
+          target: "/home/ubuntu/"
+    
+      - name: Deploy to EC2 / Check bot status
+        uses: appleboy/ssh-action@v1.0.0   
+        env: 
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
 
           script: |
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-            sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest --format="{{.ID}}"))
-            sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
-
             echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > env.list
             echo "RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}" >> env.list
             echo "RDS_USER=${{ secrets.RDS_USER }}" >> env.list
@@ -66,6 +73,7 @@ jobs:
             echo "BASE_URL=${{ secrets.BASE_URL }}" >> env.list
             echo "TZ=Asia/Seoul" >> env.list
             
-            sudo docker run -d --env-file env.list --name boj-bot ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
-            sleep 10s
-            sudo docker ps | grep ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.PROJECT_NAME }}
+            chmod 777 ./deploy.sh
+            ./deploy.sh
+            docker image prune -f
