@@ -45,42 +45,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send deploy.sh
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          source: "./deploy.sh"
-          target: "/home/ubuntu/"
-
-      - name: Send docker-compose.yml
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          source: "./docker-compose.yml"
-          target: "/home/ubuntu/"
-    
       - name: Deploy to EC2 / Check bot status
         uses: appleboy/ssh-action@v1.0.0   
-        env: 
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
 
           script: |
-            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > env.list
-            echo "RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}" >> env.list
-            echo "RDS_USER=${{ secrets.RDS_USER }}" >> env.list
-            echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> env.list
-            echo "RDS_DB=${{ secrets.RDS_DB }}" >> env.list
-            echo "BASE_URL=${{ secrets.BASE_URL }}" >> env.list
-            echo "TZ=Asia/Seoul" >> env.list
+            export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            export PROJECT_NAME=${{ secrets.PROJECT_NAME }}
+            export DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+            export RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}
+            export RDS_USER=${{ secrets.RDS_USER }}
+            export RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}
+            export RDS_DB=${{ secrets.RDS_DB }}
+            export BASE_URL=${{ secrets.BASE_URL }}
+            export TZ=Asia/Seoul
             
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.PROJECT_NAME }}
             sudo chmod 777 ./deploy.sh
