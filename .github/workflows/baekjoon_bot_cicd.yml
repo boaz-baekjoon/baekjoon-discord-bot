@@ -53,15 +53,13 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
 
           script: |
-            export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-            export PROJECT_NAME=${{ secrets.PROJECT_NAME }}
-            export DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
-            export RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}
-            export RDS_USER=${{ secrets.RDS_USER }}
-            export RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}
-            export RDS_DB=${{ secrets.RDS_DB }}
-            export BASE_URL=${{ secrets.BASE_URL }}
-            export TZ=Asia/Seoul
+            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > env.list
+            echo "RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}" >> env.list
+            echo "RDS_USER=${{ secrets.RDS_USER }}" >> env.list
+            echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> env.list
+            echo "RDS_DB=${{ secrets.RDS_DB }}" >> env.list
+            echo "BASE_URL=${{ secrets.BASE_URL }}" >> env.list
+            echo "TZ=Asia/Seoul" >> env.list
             
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.PROJECT_NAME }}
             sudo chmod 777 ./deploy.sh

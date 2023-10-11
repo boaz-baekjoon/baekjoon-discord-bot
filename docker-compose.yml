@@ -3,7 +3,7 @@ version: '3.x'
 services:
   boj-green-service:
     container_name: boj-green-container
-    image: ${DOCKERHUB_USERNAME}/${PROJECT_NAME}:latest
+    image: synoti21/baekjoon-bot:latest
     env_file:
       - env.list
     volumes:
@@ -11,7 +11,7 @@ services:
 
   boj-blue-service:
     container_name: boj-blue-container
-    image: ${DOCKERHUB_USERNAME}/${PROJECT_NAME}:latest
+    image: synoti21/baekjoon-bot:latest
     env_file:
       - env.list
     volumes:
