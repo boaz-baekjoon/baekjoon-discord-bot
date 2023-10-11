@@ -45,13 +45,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send deploy.sh
+      - name: Send deploy.sh & docker-compose.yml
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           source: "./deploy.sh"
+          target: "/home/ubuntu/"
+
+      - name: Send docker-compose.yml
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "./docker-compose.yml"
           target: "/home/ubuntu/"
     
       - name: Deploy to EC2 / Check bot status
