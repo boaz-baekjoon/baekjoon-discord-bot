@@ -45,8 +45,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send deploy.sh & docker-compose.yml
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Send deploy.sh
+        uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -55,7 +55,7 @@ jobs:
           target: "/home/ubuntu/"
 
       - name: Send docker-compose.yml
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
