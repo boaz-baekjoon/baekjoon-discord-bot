@@ -71,7 +71,7 @@ module.exports = {
                 return;
             }
             const randProblem = await getRecommendedProblem(existingID[0]['boj_id']);
-            logger.info(`반환 성공 : ${message.author.id}에게 ${randProblem.problemId}번 문제 반환`)
+            logger.info(`반환 성공 : ${message.author.id} / ${existingID[0]['boj_id']}에게 ${randProblem.problemId}번 문제 반환`)
 
             const randProblemMsg = randProblem.getEmbedMsg("개인 맞춤형 문제입니다.")
 

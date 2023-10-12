@@ -28,7 +28,7 @@ async function sendDailyProblem(client) {
 
             const targetUser = await client.users.fetch(user.discord_id)
             targetUser.send({embeds: [randProblemMsg]})
-            logger.info(`Send Problem to user ${user.discord_id}`)
+            logger.info(`Send Problem to user ${user.discord_id} / ${user.boj_id}`)
         }
         await conn.commit();
 

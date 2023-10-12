@@ -17,6 +17,7 @@ async function registerId(conn, message, isAltering, userCommandStatus) {
 
         if (response){
             message.reply(isAltering ? "정상적으로 변경되었습니다." : "정상적으로 등록되었습니다.")
+            logger.info(`${message.author.id} / ${bojId} 가입 완료`)
         }else{
             message.reply("알 수 없는 오류가 발생했습니다.")
         }
