@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: baekjoon-log-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/synoti21/boj_log"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: baekjoon-log-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baekjoon-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: baekjoon-deployment
+  template:
+    metadata:
+      labels:
+        app: baekjoon-deployment
+    spec:
+      containers:
+      - name: baekjoon-bot
+        image: synoti21/baekjoon-bot:latest
+        imagePullPolicy: Never
+        envFrom:
+        - secretRef:
+            name: baekjoon-secret
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: 1
+        ports:
+        - containerPort: 4732
+        volumeMounts:
+        - name: baekjoon-log
+          mountPath: /app/logs
+      volumes:
+      - name: baekjoon-log
+        persistentVolumeClaim:
+          claimName: baekjoon-log-claim
+
