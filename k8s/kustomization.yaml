@@ -4,3 +4,5 @@ resources:
 - manifest.yaml
 images:
 - name: synoti21/baekjoon-bot
+  newName: synoti21/baekjoon-bot
+  newTag: d95869b5
