@@ -42,7 +42,7 @@ spec:
       containers:
       - name: baekjoon-bot
         image: synoti21/baekjoon-bot:latest
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
         envFrom:
         - secretRef:
             name: baekjoon-secret
