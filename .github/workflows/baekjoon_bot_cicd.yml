@@ -3,6 +3,8 @@ name: Baekjoon-Bot CI/CD
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+        - 'k8s/**'
 
 jobs:
 
@@ -30,38 +32,56 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
         logout: true
+
+    - name: Get version
+      id: image
+      run: |
+        VERSION=$(echo ${{ github.sha }} | cut -c1-8)
+        echo VERSION=$VERSION
+        echo "::set-output name=version::$VERSION"
         
     - name: Build and push to DockerHub
       run: |
         docker build -t ${{ secrets.PROJECT_NAME }} .
-        docker tag ${{ secrets.PROJECT_NAME }}:latest ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+        docker tag ${{ secrets.PROJECT_NAME }}:latest ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ steps.image.outputs.version }}
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ steps.image.outputs.version }}
     
       
 
 
-  CD:
-    needs: CI
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy to EC2 / Check bot status
-        uses: appleboy/ssh-action@v1.0.0   
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-
-          script: |
-            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > env.list
-            echo "RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }}" >> env.list
-            echo "RDS_USER=${{ secrets.RDS_USER }}" >> env.list
-            echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> env.list
-            echo "RDS_DB=${{ secrets.RDS_DB }}" >> env.list
-            echo "BASE_URL=${{ secrets.BASE_URL }}" >> env.list
-            echo "TZ=Asia/Seoul" >> env.list
+  update-manifest:
+      runs-on: ubuntu-latest
+      needs: CI
+      steps:
+        - name: Get version
+          id: image
+          run: |
+            VERSION=$(echo ${{ github.sha }} | cut -c1-8)
+            echo VERSION=$VERSION
+            echo "::set-output name=version::$VERSION"
             
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.PROJECT_NAME }}
-            sudo chmod 777 ./deploy.sh
-            sudo bash ./deploy.sh
-            sudo docker image prune -f
+        - name: Setup Kustomize
+          uses: imranismail/setup-kustomize@v2.1.0-rc
+
+        - name: Checkout kustomize repository
+          uses: actions/checkout@v3
+          with:
+            repository: boaz-baekjoon/baekjoon-discord-bot
+            ref: main
+            token: ${{ secrets.ACCESS_TOKEN }}
+            path: baekjoon-discord-bot
+            
+
+        - name: Update Kubernetes resources
+          run: |
+            cd baekjoon-discord-bot/k8s/
+            kustomize edit set image synoti21/${{ secrets.PROJECT_NAME }}=synoti21/${{ secrets.PROJECT_NAME }}:${{ steps.image.outputs.version }}
+            kustomize build .
+  
+        - name: Commit and push the updated manifest
+          run: |
+            cd fam-Story_Backend
+            git config --global user.name 'github-actions'
+            git config --global user.email 'github-actions@github.com'
+            git commit -am ":construction_worker: chore: Update deployment to ${{ github.sha }}"
+            git push
