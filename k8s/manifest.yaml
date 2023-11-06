@@ -30,6 +30,7 @@ kind: Deployment
 metadata:
   name: baekjoon-deployment
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
