@@ -49,8 +49,8 @@ spec:
             name: baekjoon-secret
         resources:
           limits:
-            memory: "128Mi"
-            cpu: 0.2
+            memory: "512Mi"
+            cpu: 0.5
         ports:
         - containerPort: 4732
         volumeMounts:
