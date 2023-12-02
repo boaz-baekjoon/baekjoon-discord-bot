@@ -2,11 +2,11 @@
   "name": "boj_discord_bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "jest --testPathPattern=\"^(?!.*aws_rds\\.test\\.js).*\" --passWithNoTests",
-    "start": "export NODE_ENV=production && node index.js",
-    "dev_start": "export NODE_ENV=development && node index.js"
+    "start": "export NODE_ENV=production && node src/index.js",
+    "dev_start": "export NODE_ENV=development && node src/index.js"
   },
   "keywords": [],
   "author": "",

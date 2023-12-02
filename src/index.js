@@ -14,7 +14,7 @@ const client = new Client({
         GatewayIntentBits.DirectMessages
     ],
 });
-const config = require("./config.json")
+const config = require("../config.json")
 dotenv.config();
 
 client.config = config;
