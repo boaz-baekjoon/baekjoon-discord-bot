@@ -5,7 +5,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 export class ModelConnector{
-    async getSinglePersonalizedProblems(userId, problemNum){
+    static async getSinglePersonalizedProblems(userId, problemNum){
         let problem_arr = [];
         try {
             const response = await axios.post(`${process.env.BASE_URL}/baekjun/user_id` , {
@@ -24,7 +24,7 @@ export class ModelConnector{
         return problem_arr;
     }
 
-    async getSimilarProbWithId(probId){
+    static async getSimilarProbWithId(probId){
         let problem_arr = []
         try{
             const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_id` , {
@@ -42,7 +42,7 @@ export class ModelConnector{
         return problem_arr;
     }
 
-    async getSimilarProbWithContext(probContext){
+    static async getSimilarProbWithContext(probContext){
         let problem_arr= []
         try{
             const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_text` , {

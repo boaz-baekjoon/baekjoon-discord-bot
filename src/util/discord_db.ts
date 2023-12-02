@@ -17,7 +17,7 @@ const pool = mysql.createPool({
 });
 
 export class DiscordQueryRunner{
-    async getConnection() { //Pool 커넥션 불러오기
+    static async getConnection() { //Pool 커넥션 불러오기
         try {
             return await pool.getConnection();
         } catch (error) {
@@ -26,7 +26,7 @@ export class DiscordQueryRunner{
         }
     }
 
-    async getBojID(conn, discordId){
+    static async getBojID(conn, discordId){
         try{
             const [boj_id] = await conn.execute('SELECT boj_id FROM registered_user WHERE discord_id = ?', [discordId]);
             logger.info(`request id: ${discordId} / returned rows: ${JSON.stringify(boj_id, null, 2)}`);
@@ -37,7 +37,7 @@ export class DiscordQueryRunner{
         }
     }
 
-    async addBojId(conn, discordId, bojId){
+    static async addBojId(conn, discordId, bojId){
         try{
             await conn.execute('INSERT INTO registered_user(discord_id, boj_id) VALUES(?, ?)', [discordId, bojId]);
             await conn.commit();
@@ -50,7 +50,7 @@ export class DiscordQueryRunner{
         }
     }
 
-    async modifyBojId(conn, discordId, bojId){
+    static async modifyBojId(conn, discordId, bojId){
         try{
             await conn.execute('UPDATE registered_user SET boj_id = ? where discord_id = ?', [bojId, discordId]);
             await conn.commit();
@@ -62,7 +62,7 @@ export class DiscordQueryRunner{
         }
     }
 
-    async deleteBojId(conn, discordId){
+    static async deleteBojId(conn, discordId){
         try{
             logger.info(`Deleting bojId of ${discordId}`)
             await conn.execute('DELETE FROM registered_user WHERE discord_id = ?', [discordId]);
@@ -75,7 +75,7 @@ export class DiscordQueryRunner{
         }
     }
 
-    async getUserWithCurrentCron(conn, currentTime){
+    static async getUserWithCurrentCron(conn, currentTime){
         try{
             const [users] = await conn.execute('SELECT * FROM registered_user WHERE discord_id IN ' +
                 '(SELECT discord_id from user_cron where cron = ?)',[currentTime]);
@@ -91,7 +91,7 @@ export class DiscordQueryRunner{
         }
     }
 
-    async getCronWithDiscordId(conn, discordId) {
+    static async getCronWithDiscordId(conn, discordId) {
         try{
             const [rows] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discordId])
             logger.info(`request id: ${discordId} / returned rows: ${JSON.stringify(rows, null, 2)}`);
@@ -102,7 +102,7 @@ export class DiscordQueryRunner{
         }
     }
 
-    async insertCron(conn, discordId, userCron){
+    static async insertCron(conn, discordId, userCron){
         try{
             await conn.execute('INSERT INTO user_cron(discord_id, cron) VALUES(?, ?)', [discordId, userCron]);
             const [cron_response] = await conn.execute('SELECT cron FROM user_cron WHERE discord_id = ?', [discordId])
@@ -120,7 +120,7 @@ export class DiscordQueryRunner{
             logger.error(error.message)
         }
     }
-    async modifyCron(conn, discordId, userCron){
+    static async modifyCron(conn, discordId, userCron){
         try{
             await conn.execute('UPDATE user_cron SET cron = ? where discord_id = ?', [userCron, discordId]);
             await conn.commit();
@@ -130,7 +130,7 @@ export class DiscordQueryRunner{
         }
     }
 
-    async deleteCron(conn, discordId){
+    static async deleteCron(conn, discordId){
         try{
             logger.info(`Deleting cron of ${discordId}`)
             await conn.execute('DELETE FROM user_cron WHERE discord_id = ?', [discordId]);
