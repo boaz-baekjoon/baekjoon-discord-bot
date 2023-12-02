@@ -1,14 +1,13 @@
-const axios = require('axios')
-const {BojProblem, getProblemErrorMsg} = require("../models/problem");
-const logger = require("../logger")
-const modelUtil = require("../util/model_server_api");
-const discordUtil = require("../util/discord_db");
+import axios from 'axios'
+import {BojProblem, getProblemErrorMsg} from "../models/problem";
+import {logger} from '../logger'
+import {ModelConnector} from "../util/model_server_api";
+import {DiscordQueryRunner} from "../util/discord_db";
 
-
-async function getRecommendedProblem(user_id) {
+export async function getRecommendedProblem(user_id) {
     let bojProblem = new BojProblem()
     try{
-        const problem_arr = await modelUtil.getSinglePersonalizedProblems(user_id,1)
+        const problem_arr = await ModelConnector.getSinglePersonalizedProblems(user_id,1)
         if (problem_arr.length === 0){
             logger.warn(`${user_id}/ 모델 서버 오류로 인한 랜덤 문제 반환`)
             return await getRandomProblem()
@@ -53,35 +52,33 @@ async function getRandomProblem(attempts = 0) {
         return await getRandomProblem(attempts + 1);
     }
 }
-module.exports = {
-    name: '문제 맞춤형 추천',
-    async execute(message, userCommandStatus, args) {
-        let conn;
-        if (userCommandStatus[message.author.id]) { //해당 사용자가 이미 다른 명령어를 실행하고 있는 경우
+
+export async function execute(message, userCommandStatus, args) {
+    let conn;
+    if (userCommandStatus[message.author.id]) { //해당 사용자가 이미 다른 명령어를 실행하고 있는 경우
+        return;
+    }
+
+    try{
+        conn = await DiscordQueryRunner.getConnection()
+
+        const existingID = await DiscordQueryRunner.getBojID(conn, message.author.id)
+
+        if (existingID.length < 1) { //없다면
+            message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
             return;
         }
+        const randProblem = await getRecommendedProblem(existingID[0]['boj_id']);
+        logger.info(`반환 성공 : ${message.author.id} / ${existingID[0]['boj_id']}에게 ${randProblem.problemId}번 문제 반환`)
 
-        try{
-            conn = await discordUtil.getConnection()
+        const randProblemMsg = randProblem.getEmbedMsg("개인 맞춤형 문제입니다.")
 
-            const existingID = await discordUtil.getBojID(conn, message.author.id)
+        message.channel.send({embeds: [randProblemMsg]})
+    }catch (error){
+        logger.error(error)
+        message.reply("알 수 없는 오류가 발생했습니다.")
+    }finally {
+        conn.release()
+    }
 
-            if (existingID.length < 1) { //없다면
-                message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
-                return;
-            }
-            const randProblem = await getRecommendedProblem(existingID[0]['boj_id']);
-            logger.info(`반환 성공 : ${message.author.id} / ${existingID[0]['boj_id']}에게 ${randProblem.problemId}번 문제 반환`)
-
-            const randProblemMsg = randProblem.getEmbedMsg("개인 맞춤형 문제입니다.")
-
-            message.channel.send({embeds: [randProblemMsg]})
-        }catch (error){
-            logger.error(error)
-            message.reply("알 수 없는 오류가 발생했습니다.")
-        }finally {
-            conn.release()
-        }
-
-    }, getRecommendedProblem
-};
+}

@@ -1,9 +1,9 @@
-const {Client, GatewayIntentBits, Collection} = require('discord.js')
-const fs = require('fs');
-const { sendDailyProblem } = require('./bot/cron')
-const cron = require("node-cron");
-const logger = require("./logger")
-const dotenv = require('dotenv');
+import {Client, GatewayIntentBits, Collection} from 'discord.js';
+import * as fs from 'fs';
+import { sendDailyProblem } from './bot/cron'
+import * as cron from 'node-cron';
+import { logger } from './logger'
+import * as dotenv from 'dotenv';
 
 const client = new Client({
     intents: [
@@ -14,10 +14,8 @@ const client = new Client({
         GatewayIntentBits.DirectMessages
     ],
 });
-const config = require("../config.json")
 dotenv.config();
 
-client.config = config;
 client.commands = new Collection();
 
 module.exports = client;

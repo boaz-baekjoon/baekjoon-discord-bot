@@ -1,7 +1,6 @@
-const winston = require('winston');
-const winstonDaily = require('winston-daily-rotate-file');
-const process = require('process');
-const {log} = require("winston");
+import * as winston from 'winston';
+import * as winstonDaily from 'winston-daily-rotate-file';
+import * as process from 'process';
 
 const { combine, timestamp, label, printf } = winston.format;
 
@@ -11,6 +10,7 @@ const logLevel = process.env.NODE_ENV === 'development' ? 'verbose' : 'info';
 const logFormat = printf(({ level, message, label, timestamp }) => {
     return `${timestamp} [${label}] ${level}: ${message}`;
 });
+
 
 
 const transports = [
@@ -47,7 +47,7 @@ if (process.env.NODE_ENV !== 'production') {
     );
 }
 
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
     level: logLevel,
     format: combine(
         timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -79,4 +79,3 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 
-module.exports = logger;

@@ -1,6 +1,10 @@
-const {EmbedBuilder} = require("discord.js");
+import {EmbedBuilder} from 'discord.js';
 
 class BojProblem{
+    private problemId: number;
+    private title: string;
+    private level: number;
+    private tags: string[];
     constructor() {}
     setProperties(problemId, title, level, tags){
         this.problemId = problemId
