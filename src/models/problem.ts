@@ -5,12 +5,11 @@ class BojProblem{
     private title: string;
     private level: number;
     private tags: string[];
-    constructor() {}
-    setProperties(problemId, title, level, tags){
-        this.problemId = problemId
-        this.title = title
-        this.level = level
-        this.tags = tags.map(tag => tag.key)
+    constructor(problemId, title, level, tags) {
+        this.problemId = problemId;
+        this.title = title;
+        this.level = level;
+        this.tags = tags;
     }
     getLevel(){
         let probLevel = this.level
@@ -51,7 +50,8 @@ class BojProblem{
     }
 
 }
-function getProblemErrorMsg(msgTitle){
+
+export function getProblemErrorMsg(msgTitle){
     return new BojProblem(-1, "알 수 없는 오류가 발생했습니다.", 0, [])
 }
 

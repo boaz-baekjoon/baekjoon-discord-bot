@@ -1,11 +1,10 @@
-import {Client, GatewayIntentBits, Collection} from 'discord.js';
-import * as fs from 'fs';
+import {Client, GatewayIntentBits} from 'discord.js';
 import { sendDailyProblem } from './bot/cron'
 import * as cron from 'node-cron';
 import { logger } from './logger'
-import * as dotenv from 'dotenv';
+import {initializeBot} from "./bot/initialize-bot";
 
-const client = new Client({
+export const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
@@ -14,29 +13,10 @@ const client = new Client({
         GatewayIntentBits.DirectMessages
     ],
 });
-dotenv.config();
 
-client.commands = new Collection();
-
-module.exports = client;
-
-client.login(process.env.DISCORD_TOKEN);
-
-require('./bot/welcome')
-
-
-client.once('ready', async () => {
-    console.log("BOJ Bot is ready")
+initializeBot(client).then(() => {
+    logger.info(`Successfully Initialized at ${Date.now()}`)
 })
-
-const commands = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
-for (const file of commands) {
-    const commandName = file.split(".")[0];
-    const command = require(`./commands/${file}`);
-
-    console.log(`Attempting to load command ${commandName}`);
-    client.commands.set(commandName, command);
-}
 
 const userCommandStatus = {}
 client.on('messageCreate', message => {
@@ -55,14 +35,11 @@ client.on('messageCreate', message => {
 
     //올바른 명령어가 아니면 무시
     if (!client.commands.has(command)) {
-        console.log("Command Not Found")
         message.reply("알 수 없는 명령어입니다. 명령어를 확인하시려면 !help를 입력해주세요.")
         return;
     }
 
     try {
-        console.log(`Entered Command : ${command}`)
-        console.log(message.author.id)
         client.commands.get(command).execute(message, userCommandStatus, args);
     } catch (error) {
         console.error(error);
