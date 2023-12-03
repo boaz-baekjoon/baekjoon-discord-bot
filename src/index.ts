@@ -1,9 +1,14 @@
-import {Client, GatewayIntentBits} from 'discord.js';
+import {Client, Collection, GatewayIntentBits} from 'discord.js';
 import { sendDailyProblem } from './bot/cron'
 import * as cron from 'node-cron';
 import { logger } from './logger'
 import {initializeBot} from "./bot/initialize-bot";
 
+declare module "discord.js" {
+    export interface Client {
+        commands: Collection<unknown, any>
+    }
+}
 export const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -17,6 +22,7 @@ export const client = new Client({
 initializeBot(client).then(() => {
     logger.info(`Successfully Initialized at ${Date.now()}`)
 })
+
 
 const userCommandStatus = {}
 client.on('messageCreate', message => {

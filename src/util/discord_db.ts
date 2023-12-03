@@ -8,7 +8,7 @@ const pool = mysql.createPool({
     host: process.env.RDS_ENDPOINT,
     user: process.env.RDS_USER,
     password: process.env.RDS_PASSWORD,
-    database: 'boj_bot_db',
+    database: 'boj_bot_db_test',
     port: 3306,
     waitForConnections: true,
     connectionLimit: 40,

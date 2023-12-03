@@ -2,8 +2,9 @@ import {Client, Collection, GatewayIntentBits} from "discord.js";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 
-dotenv.config();
 export async function initializeBot(client: Client){
+    dotenv.config();
+
     //Set default collections for commands
     client.commands = new Collection();
 

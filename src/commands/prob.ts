@@ -5,7 +5,7 @@ import {ModelConnector} from "../util/model_server_api";
 import {DiscordQueryRunner} from "../util/discord_db";
 
 export async function getRecommendedProblem(user_id) {
-    let bojProblem = new BojProblem()
+    let bojProblem = new BojProblem(null, null, null, null);
     try{
         const problem_arr = await ModelConnector.getSinglePersonalizedProblems(user_id,1)
         if (problem_arr.length === 0){
@@ -17,7 +17,10 @@ export async function getRecommendedProblem(user_id) {
                 problemId: problem_arr[0],
             },
         });
-        bojProblem.setProperties(response.data.problemId, response.data.titleKo, response.data.level, response.data.tags)
+        bojProblem.setProblemId(response.data.problemId)
+        bojProblem.setTitle(response.data.titleKo)
+        bojProblem.setLevel(response.data.level)
+        bojProblem.setTags(response.data.tags)
     }catch(error){
         logger.error(error)
         logger.warn(`${user_id}/ 모델 서버 오류로 인한 랜덤 문제 반환`)
@@ -27,7 +30,7 @@ export async function getRecommendedProblem(user_id) {
 }
 
 async function getRandomProblem(attempts = 0) {
-    let bojProblem = new BojProblem()
+    let bojProblem = new BojProblem(null, null, null, null);
     if (attempts >= 5) {
         logger.warn("최대 요청 횟수 (5회) 초과")
         return getProblemErrorMsg("알 수 없는 오류가 발생했습니다.")
@@ -41,7 +44,10 @@ async function getRandomProblem(attempts = 0) {
             },
         });
         console.log(response.data)
-        bojProblem.setProperties(response.data.problemId, response.data.titleKo + " (모델 서버 오류로 인한 랜덤 문제)", response.data.level, response.data.tags)
+        bojProblem.setProblemId(response.data.problemId)
+        bojProblem.setTitle(response.data.titleKo + " (모델 서버 오류로 인한 랜덤 문제)");
+        bojProblem.setLevel(response.data.level)
+        bojProblem.setTags(response.data.tags)
 
         return bojProblem
 
@@ -69,7 +75,6 @@ export async function execute(message, userCommandStatus, args) {
             return;
         }
         const randProblem = await getRecommendedProblem(existingID[0]['boj_id']);
-        logger.info(`반환 성공 : ${message.author.id} / ${existingID[0]['boj_id']}에게 ${randProblem.problemId}번 문제 반환`)
 
         const randProblemMsg = randProblem.getEmbedMsg("개인 맞춤형 문제입니다.")
 
