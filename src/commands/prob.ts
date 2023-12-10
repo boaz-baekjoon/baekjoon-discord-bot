@@ -83,7 +83,12 @@ export async function execute(message, userCommandStatus, args) {
         logger.error(error)
         message.reply("알 수 없는 오류가 발생했습니다.")
     }finally {
-        conn.release()
+        try{
+            conn.release()
+        }
+        catch (error){
+            console.log(error)
+        }
     }
 
 }
