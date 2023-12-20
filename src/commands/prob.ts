@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {BojProblem, getProblemErrorMsg} from "../models/problem";
+import {BojProblem, getProblemErrorMsg} from "../schema/problem";
 import {logger} from '../logger'
 import {ModelConnector} from "../util/model_server_api";
 import {DiscordQueryRunner} from "../util/discord_db";
