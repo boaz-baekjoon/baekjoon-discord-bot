@@ -7,3 +7,4 @@ deploy.sh
 docker-compose.yml
 README.md
 node_modules
+dist

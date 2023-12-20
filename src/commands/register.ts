@@ -1,5 +1,5 @@
-const discord_util = require('../util/discord_db')
-const logger = require('../logger')
+import {DiscordQueryRunner} from "../util/discord_db";
+import {logger} from "../logger";
 
 async function registerId(conn, message, isAltering, userCommandStatus) {
     message.reply("등록하실 백준 아이디를 입력해주세요.");
@@ -10,9 +10,9 @@ async function registerId(conn, message, isAltering, userCommandStatus) {
         let response;
 
         if(isAltering === true){
-            response = discord_util.modifyBojId(conn, message.author.id, bojId);
+            response = DiscordQueryRunner.modifyBojId(conn, message.author.id, bojId);
         }else{
-            response = discord_util.addBojId(conn, message.author.id, bojId);
+            response = DiscordQueryRunner.addBojId(conn, message.author.id, bojId);
         }
 
         if (response){
@@ -41,8 +41,8 @@ module.exports = {
         try{
             userCommandStatus[message.author.id] = true; //명령어를 실행하는 상태로 전환
 
-            conn = await discord_util.getConnection()
-            const response = await discord_util.getBojID(conn, message.author.id)
+            conn = await DiscordQueryRunner.getConnection()
+            const response = await DiscordQueryRunner.getBojID(conn, message.author.id)
 
 
             if (response.length > 0){
@@ -55,7 +55,7 @@ module.exports = {
                     if (msg.content === '변경'){
                         await registerId(conn, message, true, userCommandStatus)
                     }else if (msg.content === '삭제'){
-                        const response = await discord_util.deleteBojId(conn, message.author.id)
+                        const response = await DiscordQueryRunner.deleteBojId(conn, message.author.id)
                         if (response){
                             message.reply("정상적으로 삭제되었습니다.")
                         }else{

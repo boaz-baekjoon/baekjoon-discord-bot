@@ -1,5 +1,5 @@
-const {EmbedBuilder} = require("discord.js");
-const embedWelcome = new EmbedBuilder()
+import {EmbedBuilder} from "discord.js";
+export const embedWelcome = new EmbedBuilder()
     .setColor(0x3498DB)
     .setAuthor({name: 'BOJ Bot'})
     .setTitle("안녕하세요 백준 봇입니다! :)")
@@ -14,5 +14,3 @@ const embedWelcome = new EmbedBuilder()
 
     )
     .setTimestamp()
-
-module.exports = embedWelcome;

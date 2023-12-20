@@ -1,10 +1,11 @@
-const discordUtil = require('../util/discord_db')
-const { getRecommendedProblem } = require('../commands/prob')
-const logger = require("../logger")
-async function sendDailyProblem(client) {
+import { DiscordQueryRunner } from '../util/discord_db';
+import { getRecommendedProblem } from '../commands/prob'
+import { logger}  from '../logger'
+
+export async function sendDailyProblem(client) {
     let conn;
     try {
-        conn = await discordUtil.getConnection();
+        conn = await DiscordQueryRunner.getConnection();
         logger.verbose(conn)
 
         if (!conn) {
@@ -19,12 +20,12 @@ async function sendDailyProblem(client) {
         const currentTime = `${currentHour} ${currentMinute}`
         logger.verbose(`Time Switched: ${currentTime}`)
 
-        const users = await discordUtil.getUserWithCurrentCron(conn, currentTime)
+        const users = await DiscordQueryRunner.getUserWithCurrentCron(conn, currentTime)
 
         for (let user of users) {
             logger.verbose(`Target user notified: ${user.boj_id}`)
             const randProblem = await getRecommendedProblem(user.boj_id)
-            const randProblemMsg = randProblem.getEmbedMsg(`일일 문제: ${randProblem.problemId} - ${randProblem.title}`)
+            const randProblemMsg = randProblem.getEmbedMsg(`일일 문제: ${randProblem.getProblemId()} - ${randProblem.getTitle()}`)
 
             const targetUser = await client.users.fetch(user.discord_id)
             targetUser.send({embeds: [randProblemMsg]})
@@ -40,5 +41,3 @@ async function sendDailyProblem(client) {
     }
 
 }
-
-module.exports = { sendDailyProblem }
