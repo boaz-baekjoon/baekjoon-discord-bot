@@ -2,11 +2,11 @@
   "name": "boj_discord_bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "test": "jest --testPathPattern=\"^(?!.*aws_rds\\.test\\.js).*\" --passWithNoTests",
-    "start": "export NODE_ENV=production && node index.js",
-    "dev_start": "export NODE_ENV=development && node index.js"
+    "test": "jest --testPathPattern=\"^(?!.*aws_rds\\.test\\.ts).*\" --passWithNoTests",
+    "start": "export NODE_ENV=production && ts-node src/index.ts",
+    "dev_start": "export NODE_ENV=development && ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,12 +19,18 @@
     "mysql2": "^3.6.0",
     "node-cron": "^3.0.2",
     "process": "^0.11.10",
+    "reflect-metadata": "^0.1.14",
     "sequelize": "^6.33.0",
     "sequelize-cli": "^6.6.1",
+    "typeorm": "^0.3.17",
     "winston": "^3.10.0",
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
-    "jest": "^29.6.2"
+    "@types/node": "^20.10.4",
+    "eslint": "^8.54.0",
+    "jest": "^29.6.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.2"
   }
 }

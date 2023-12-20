@@ -6,24 +6,24 @@
 // 4. 형식이 잘못되면 오류 메시지 및 "다시 입력해주세요".
 // 5. 쿼리 실행 후 등록
 
-const logger = require("../logger")
-const discordUtil = require("../util/discord_db")
+import { logger } from '../logger'
+import { DiscordQueryRunner } from '../util/discord_db'
 
 async function getUserCron(author, message, userCommandStatus){
-    const conn = await discordUtil.getConnection();
+    const conn = await DiscordQueryRunner.getConnection();
 
     try{
         await conn.beginTransaction()
         logger.verbose("DB Begin Transaction. 이미 존재하는 BOJ ID 탐색")
 
-        const existingID = await discordUtil.getBojID(conn, message.author.id)
+        const existingID = await DiscordQueryRunner.getBojID(conn, message.author.id)
 
         if (existingID.length < 1) { //없다면
             message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
             return;
         }
 
-        const user_cron = await discordUtil.getCronWithDiscordId(conn, message.author.id)
+        const user_cron = await DiscordQueryRunner.getCronWithDiscordId(conn, message.author.id)
 
         if (user_cron.length > 0) {
             const [hour, min] = user_cron[0].cron.split(' ');
@@ -38,7 +38,7 @@ async function getUserCron(author, message, userCommandStatus){
                 }else if (msg.content === '취소'){
                     message.reply("변경을 취소하셨습니다.")
                 }else if (msg.content === '비활성화'){
-                    const result = await discordUtil.deleteCron(conn, message.author.id)
+                    const result = await DiscordQueryRunner.deleteCron(conn, message.author.id)
                     if (result === 0){
                         message.reply("알림을 비활성화했습니다")
                     }else{
@@ -130,12 +130,12 @@ async function insertUserCron(discordId, userInput, conn, isAltering) {
     const userCron = `${norm_hour} ${norm_min}`
     try{
         if (!isAltering){
-            const response = await discordUtil.insertCron(conn, discordId, userCron);
+            const response = await DiscordQueryRunner.insertCron(conn, discordId, userCron);
             if(response.length < 1){
                 return -1;
             }
         }else{
-            await discordUtil.modifyCron(conn, discordId, userCron);
+            await DiscordQueryRunner.modifyCron(conn, discordId, userCron);
         }
         return 0;
     }catch (error){
