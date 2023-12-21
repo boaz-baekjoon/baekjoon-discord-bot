@@ -4,23 +4,29 @@ import {logger} from "../logger";
 
 export class MongoUtil{
     //map discordId and bojId, and save it to mongoDB
-    async addUser(userDiscordId: string, userBojId: string): Promise<Boolean>{
+
+    static async addUser(userDiscordId: string, userBojId: string): Promise<Boolean>{
+        const session = await mongoose.startSession();
         try{
             const user = new User({
                 discord_id: userDiscordId,
                 boj_id: userBojId,
             });
-            await user.save();
+            await user.save({session: session});
             logger.info(`Adding user ${userDiscordId} with boj id ${userBojId}`);
+            await session.commitTransaction();
             return true;
         }catch (error){
             logger.error(error.message);
+            await session.abortTransaction();
+        }finally {
+            await session.endSession();
         }
         return false;
     }
 
     //delete user with discordId
-    async deleteUser(userDiscordId: string): Promise<Boolean>{
+    static async deleteUser(userDiscordId: string): Promise<Boolean>{
         try{
             await User.deleteOne({discord_id: userDiscordId});
             logger.info(`Deleting user ${userDiscordId}`);
@@ -32,7 +38,7 @@ export class MongoUtil{
     }
 
     //modify bojId of user with discordId
-    async modifyBojIdOfUser(userDiscordId: string, userBojId: string): Promise<Boolean>{
+    static async modifyBojIdOfUser(userDiscordId: string, userBojId: string): Promise<Boolean>{
         try {
             await User.updateOne({discord_id: userDiscordId}, {boj_id: userBojId});
             logger.info(`Modifying boj id of user ${userDiscordId} to ${userBojId}`);
@@ -44,7 +50,7 @@ export class MongoUtil{
     }
 
     //add time at which user wants to get notification
-    async addTime(userDiscordId: string, userCron: string): Promise<Boolean>{
+    static async addTime(userDiscordId: string, userCron: string): Promise<Boolean>{
         try{
             await User.updateOne({discord_id: userDiscordId}, {cron: userCron});
             logger.info(`Adding time ${userCron} to user ${userDiscordId}`);
@@ -56,7 +62,7 @@ export class MongoUtil{
     }
 
     //deactivate daily problem notification
-    async deleteTime(userDiscordId: string): Promise<Boolean>{
+    static async deleteTime(userDiscordId: string): Promise<Boolean>{
         try {
             await User.updateOne({discord_id: userDiscordId}, {cron: null});
             logger.info(`Deleting time of user ${userDiscordId}`);
@@ -68,7 +74,7 @@ export class MongoUtil{
     }
 
     //modify time at which user wants to get notification, and will be executed for users who already activated daily notification
-    async modifyTime(userDiscordId: String, userCron: String): Promise<Boolean>{
+    static async modifyTime(userDiscordId: String, userCron: String): Promise<Boolean>{
         try {
             await User.updateOne({discord_id: userDiscordId}, {cron: userCron});
             logger.info(`Modifying time of user ${userDiscordId} to ${userCron}`);
@@ -79,7 +85,7 @@ export class MongoUtil{
     }
 
     //find user with discordId, for checking if user already registered. BojId will be displayed if user already registered
-    async findUserWithDiscordId(userDiscordId: string): Promise<any>{
+    static async findUserWithDiscordId(userDiscordId: string): Promise<any>{
         try {
             const user = await User.findOne({discord_id: userDiscordId});
             logger.info(`Finding user ${userDiscordId}`);
@@ -94,7 +100,7 @@ export class MongoUtil{
     }
 
     //for sending daily problem notification at corresponding time
-    async findUserWithUserCron(userCron: string): Promise<any>{
+    static async findUserWithUserCron(userCron: string): Promise<any>{
         try {
             const users = await User.find({cron: userCron});
             logger.info(`Finding users with time ${userCron}`);
