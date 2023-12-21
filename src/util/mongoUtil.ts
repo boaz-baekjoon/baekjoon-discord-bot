@@ -3,6 +3,7 @@ import { User } from '../schema/user';
 import {logger} from "../logger";
 
 export class MongoUtil{
+    //map discordId and bojId, and save it to mongoDB
     async addUser(userDiscordId: string, userBojId: string): Promise<Boolean>{
         try{
             const user = new User({
@@ -18,6 +19,7 @@ export class MongoUtil{
         return false;
     }
 
+    //delete user with discordId
     async deleteUser(userDiscordId: string): Promise<Boolean>{
         try{
             await User.deleteOne({discord_id: userDiscordId});
@@ -29,6 +31,7 @@ export class MongoUtil{
         return false;
     }
 
+    //modify bojId of user with discordId
     async modifyBojIdOfUser(userDiscordId: string, userBojId: string): Promise<Boolean>{
         try {
             await User.updateOne({discord_id: userDiscordId}, {boj_id: userBojId});
@@ -40,6 +43,7 @@ export class MongoUtil{
         return false;
     }
 
+    //add time at which user wants to get notification
     async addTime(userDiscordId: string, userCron: string): Promise<Boolean>{
         try{
             await User.updateOne({discord_id: userDiscordId}, {cron: userCron});
@@ -51,6 +55,7 @@ export class MongoUtil{
         return false;
     }
 
+    //deactivate daily problem notification
     async deleteTime(userDiscordId: string): Promise<Boolean>{
         try {
             await User.updateOne({discord_id: userDiscordId}, {cron: null});
@@ -62,6 +67,7 @@ export class MongoUtil{
         return false;
     }
 
+    //modify time at which user wants to get notification, and will be executed for users who already activated daily notification
     async modifyTime(userDiscordId: String, userCron: String): Promise<Boolean>{
         try {
             await User.updateOne({discord_id: userDiscordId}, {cron: userCron});
@@ -72,6 +78,7 @@ export class MongoUtil{
         }
     }
 
+    //find user with discordId, for checking if user already registered. BojId will be displayed if user already registered
     async findUserWithDiscordId(userDiscordId: string): Promise<any>{
         try {
             const user = await User.findOne({discord_id: userDiscordId});
@@ -86,6 +93,7 @@ export class MongoUtil{
         }
     }
 
+    //for sending daily problem notification at corresponding time
     async findUserWithUserCron(userCron: string): Promise<any>{
         try {
             const users = await User.find({cron: userCron});
