@@ -1,13 +1,13 @@
 import axios from 'axios'
 import {BojProblem, getProblemErrorMsg} from "../schema/problem";
 import {logger} from '../logger'
-import {ModelConnector} from "../util/model_server_api";
+import {modelUtil} from "../util/model_server_api";
 import {DiscordQueryRunner} from "../util/discord_db";
 
 export async function getRecommendedProblem(user_id) {
     let bojProblem = new BojProblem(null, null, null, null);
     try{
-        const problem_arr = await ModelConnector.getSinglePersonalizedProblems(user_id,1)
+        const problem_arr = await modelUtil.getSingleProblem(user_id,1)
         if (problem_arr.length === 0){
             logger.warn(`${user_id}/ 모델 서버 오류로 인한 랜덤 문제 반환`)
             return await getRandomProblem()
