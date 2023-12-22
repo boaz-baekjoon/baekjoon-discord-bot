@@ -4,11 +4,12 @@ import {logger} from "../logger";
 
 export class MongoUtil{
     //map discordId and bojId, and save it to mongoDB
-
     static async addUser(userDiscordId: string, userBojId: string): Promise<Boolean>{
-        const session = await mongoose.startSession();
-        session.startTransaction();
+        let session: mongoose.mongo.ClientSession;
         try{
+            session = await mongoose.startSession();
+            session.startTransaction();
+
             const user = new User({
                 discord_id: userDiscordId,
                 boj_id: userBojId,
@@ -18,102 +19,136 @@ export class MongoUtil{
             await session.commitTransaction();
             return true;
         }catch (error){
+            if(session){
+                await session.abortTransaction();
+            }
             logger.error(error.message);
-            await session.abortTransaction();
+            return false;
         }finally {
-            await session.endSession();
+            if (session){
+                await session.endSession();
+            }
         }
-        return false;
     }
 
     //delete user with discordId
     static async deleteUser(userDiscordId: string): Promise<Boolean>{
-        const session = await mongoose.startSession();
-        session.startTransaction();
+        let session: mongoose.mongo.ClientSession;
         try{
+            session = await mongoose.startSession();
+            session.startTransaction();
+
             await User.deleteOne({discord_id: userDiscordId}, {session: session});
             logger.info(`Deleting user ${userDiscordId}`);
             await session.commitTransaction();
             return true;
         }catch(error){
+            if(session){
+                await session.abortTransaction();
+            }
             logger.error(error.message);
-            await session.abortTransaction();
+            return false;
         }finally {
-            await session.endSession();
+            if (session){
+                await session.endSession();
+            }
         }
-        return false;
     }
 
     //modify bojId of user with discordId
     static async modifyBojIdOfUser(userDiscordId: string, userBojId: string): Promise<Boolean>{
-        const session = await mongoose.startSession();
-        session.startTransaction();
+        let session: mongoose.mongo.ClientSession;
         try {
+            session = await mongoose.startSession();
+            session.startTransaction();
+
             await User.updateOne({discord_id: userDiscordId}, {boj_id: userBojId}, {session: session});
             logger.info(`Modifying boj id of user ${userDiscordId} to ${userBojId}`);
             await session.commitTransaction();
             return true;
         }catch(error){
+            if(session){
+                await session.abortTransaction();
+            }
             logger.error(error.message);
-            await session.abortTransaction();
+            return false;
         }finally {
-            await session.endSession();
+            if (session){
+                await session.endSession();
+            }
         }
-        return false;
     }
 
     //add time at which user wants to get notification
     static async addTime(userDiscordId: string, userDailyTime: string): Promise<Boolean>{
-        const session = await mongoose.startSession();
-        session.startTransaction();
+        let session: mongoose.mongo.ClientSession;
         try{
+            session = await mongoose.startSession();
+            session.startTransaction();
+
             await User.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime}, {session: session});
             logger.info(`Adding time ${userDailyTime} to user ${userDiscordId}`);
             await session.commitTransaction();
             return true;
         }catch (error){
+            if(session){
+                await session.abortTransaction();
+            }
             logger.error(error.message);
-            await session.abortTransaction();
+            return false;
         }finally {
-            await session.endSession();
+            if (session){
+                await session.endSession();
+            }
         }
-        return false;
     }
 
     //deactivate daily problem notification
     static async deleteTime(userDiscordId: string): Promise<Boolean>{
-        const session = await mongoose.startSession();
-        session.startTransaction();
+        let session: mongoose.mongo.ClientSession;
         try {
+            session = await mongoose.startSession();
+            session.startTransaction();
+
             await User.updateOne({discord_id: userDiscordId}, {daily_time: null}), {session: session};
             logger.info(`Deleting time of user ${userDiscordId}`);
             await session.commitTransaction();
             return true;
         }catch(error){
+            if(session){
+                await session.abortTransaction();
+            }
             logger.error(error.message);
-            await session.abortTransaction();
+            return false;
         }finally {
-            await session.endSession();
+            if (session){
+                await session.endSession();
+            }
         }
-        return false;
     }
 
     //modify time at which user wants to get notification, and will be executed for users who already activated daily notification
     static async modifyTime(userDiscordId: String, userDailyTime: String): Promise<Boolean>{
-        const session = await mongoose.startSession();
-        session.startTransaction();
+        let session: mongoose.mongo.ClientSession;
         try {
+            session = await mongoose.startSession();
+            session.startTransaction();
+
             await User.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime});
             logger.info(`Modifying time of user ${userDiscordId} to ${userDailyTime}`);
             await session.commitTransaction();
             return true;
         }catch(error){
+            if(session){
+                await session.abortTransaction();
+            }
             logger.error(error.message);
-            await session.abortTransaction();
+            return false;
         }finally {
-            await session.endSession();
+            if (session){
+                await session.endSession();
+            }
         }
-        return false;
     }
 
     //find user with discordId, for checking if user already registered. BojId will be displayed if user already registered
