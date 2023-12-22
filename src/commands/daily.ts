@@ -7,105 +7,103 @@
 // 5. 쿼리 실행 후 등록
 
 import { logger } from '../logger'
-import { DiscordQueryRunner } from '../util/discord_db'
+import { MongoUtil } from '../util/mongoUtil'
+import {Message} from "discord.js";
 
-async function getUserCron(author, message, userCommandStatus){
-    const conn = await DiscordQueryRunner.getConnection();
+async function getUserDailyTime(message: Message){
+    try {
+        const user = await MongoUtil.findUserWithDiscordId(message.author.id)
 
-    try{
-        await conn.beginTransaction()
-        logger.verbose("DB Begin Transaction. 이미 존재하는 BOJ ID 탐색")
-
-        const existingID = await DiscordQueryRunner.getBojID(conn, message.author.id)
-
-        if (existingID.length < 1) { //없다면
-            message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
+        if (!user) { //If no user is found
+            await message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
             return;
         }
 
-        const user_cron = await DiscordQueryRunner.getCronWithDiscordId(conn, message.author.id)
+        if (user['daily_time']) { //If user already set daily time
+            const [hour, min] = user['daily_time'].split(' ');
+            await message.reply(`${hour}시 ${min}분으로 알림이 설정된 상태입니다. 알림을 비활성화하려면 '비활성화', 변경하시려면 '변경', 명령을 취소하려면 '취소'를 입력해주세요`);
 
-        if (user_cron.length > 0) {
-            const [hour, min] = user_cron[0].cron.split(' ');
-            message.reply(`${hour}시 ${min}분으로 알림이 설정된 상태입니다. 알림을 비활성화하려면 '비활성화', 변경하시려면 '변경', 명령을 취소하려면 '취소'를 입력해주세요`);
+            // Filter for user response
+            const responseFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!') &&
+                (m.content === '비활성화' || m.content === '변경' || m.content === '취소');
+            const responseCollector = message.channel.createMessageCollector({
+                filter: responseFilter,
+                max: 1,
+                time: 20000
+            });
 
-            const responseFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!') && (m.content === '비활성화' || m.content === '변경' || m.content === '취소');
-            const responseCollector = message.channel.createMessageCollector({filter: responseFilter,max:1, time: 20000});
-
+            // Execute functions based on user response
             responseCollector.on('collect', async msg => {
-                if (msg.content === '변경'){
-                    askForTime(message, userCommandStatus, conn, 1);
-                }else if (msg.content === '취소'){
-                    message.reply("변경을 취소하셨습니다.")
-                }else if (msg.content === '비활성화'){
-                    const result = await DiscordQueryRunner.deleteCron(conn, message.author.id)
-                    if (result === 0){
-                        message.reply("알림을 비활성화했습니다")
-                    }else{
-                        message.reply("알 수 없는 오류가 발생했습니다.")
-                    }
-
+                switch (msg.content) {
+                    case '변경':
+                        getInputOfDailyTime(message, true);
+                        break;
+                    case '취소':
+                        await message.reply("명령을 취소하셨습니다.")
+                        break;
+                    case '비활성화':
+                        const result = await MongoUtil.deleteTime(message.author.id);
+                        if (result) {
+                            await message.reply("알림을 비활성화했습니다")
+                        } else {
+                            await message.reply("알 수 없는 오류가 발생했습니다.")
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 responseCollector.stop();
             });
 
             responseCollector.on('end', collected => {
-                userCommandStatus[message.author.id] = false;
-
-                //시간 초과되면 종료
+                //Terminate if time limit is exceeded
                 if (collected.size === 0) {
                     message.channel.send("입력 시간이 만료되었습니다.");
                 }
             });
 
-        } else {
-            askForTime(message, userCommandStatus, conn, 0);
+        } else { //If user did not set daily time
+            getInputOfDailyTime(message, false);
         }
     }catch (error){
-        if (conn) await conn.rollback();
-        logger.error(`Error: ${error} / ${author.id}`)
-    }finally {
-        if (conn) await conn.release();
-        userCommandStatus[message.author.id] = false
+        logger.error(error)
     }
-
 }
 
 
-function askForTime(message, userCommandStatus, conn, isAltering) {
+function getInputOfDailyTime(message: Message, isUserDailyTimeAlreadySet: boolean) {
     message.channel.send("원하시는 시간을 24시간제로 다음과 같이 입력해주세요. (HH MM), 취소를 원하실 경우 '취소'를 입력해주세요.");
 
     const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
     const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
 
     idCollector.on('collect', async msg => {
-        const cronMsg = msg.content;
-        if (cronMsg === '취소'){
-            message.reply("명령을 취소하셨습니다.")
+        if (msg.content === '취소'){
+            await message.reply("명령을 취소하셨습니다.")
             return;
         }
 
-        const isCronInserted = await insertUserCron(message.author.id, cronMsg, conn, isAltering)
+        const isDailyTimeInserted = await addDailyTimeOfUser(message.author.id, msg.content, isUserDailyTimeAlreadySet)
 
-        logger.verbose(`Collected Message by ${msg.author.username}: ${msg.content}, ${isCronInserted}`)
-        if (isCronInserted === 0){
-            const [hour, min] = cronMsg.split(' ')
-            message.channel.send(`성공적으로 등록되었습니다. 설정한 시간: ${hour}시 ${min}분`)
-        }else{
-            if (isCronInserted === -1){
+        switch (isDailyTimeInserted) {
+            case 0: //If time is successfully inserted
+                const [hour, min] = msg.content.split(' ')
+                message.channel.send(`성공적으로 등록되었습니다. 설정한 시간: ${hour}시 ${min}분`)
+                break;
+            case -1: //If error occurred
                 message.channel.send("알 수 없는 오류가 발생했습니다.")
-            }else if (isCronInserted === -2){
-                message.reply("시간 형식이 올바르지 않습니다. 올바른 형식으로 입력해주세요. (ex. 오전 1시 1분: 01 01)")
-            }
+                break;
+            case -2: //If time format is invalid
+                await message.reply("시간 형식이 올바르지 않습니다. 올바른 형식으로 입력해주세요. (ex. 오전 1시 1분: 01 01)")
+                break;
         }
-        //백준 ID를 입력했으면 아이디 콜렉터 종료
+
+        //Terminate the collector after the user inputs the time
         idCollector.stop();
     });
 
     idCollector.on('end', collected => {
-        userCommandStatus[message.author.id] = false;
-
-        //시간 초과되면 종료
+        //Terminate if time limit is exceeded
         if (collected.size === 0) {
             message.channel.send("입력 시간이 만료되었습니다.");
         }
@@ -113,54 +111,39 @@ function askForTime(message, userCommandStatus, conn, isAltering) {
 
 }
 
-async function insertUserCron(discordId, userInput, conn, isAltering) {
+async function addDailyTimeOfUser(discordId: string, userInput: string, isDailyTimeAlreadySet: boolean) {
     const [hour, minute] = userInput.split(' ');
 
-    if (hour.length !== 2 || minute.length !== 2) {
+    // If the time format is not properly entered
+    if (hour.length !== 2 || minute.length !== 2 || isNaN(Number(hour)) || isNaN(Number(minute)) ||
+        parseInt(hour, 10) < 0 || parseInt(hour, 10) >= 24 || parseInt(minute, 10) < 0 ||
+        parseInt(minute, 10) >= 60) {
         return -2;
     }
 
-    if (isNaN(hour) || isNaN(minute) || parseInt(hour, 10) < 0 || parseInt(hour, 10) >= 24 || parseInt(minute, 10) < 0 || parseInt(minute, 10) >= 60) {
-        return -2;
-    }
+    const userDailyTime = `${parseInt(hour, 10)} ${parseInt(minute, 10)}`
 
-    const norm_hour = parseInt(hour, 10)
-    const norm_min = parseInt(minute, 10)
-
-    const userCron = `${norm_hour} ${norm_min}`
-    try{
-        if (!isAltering){
-            const response = await DiscordQueryRunner.insertCron(conn, discordId, userCron);
-            if(response.length < 1){
-                return -1;
-            }
-        }else{
-            await DiscordQueryRunner.modifyCron(conn, discordId, userCron);
+    // Modify time if user already set daily time, add time if not
+    if (!isDailyTimeAlreadySet){
+        const response = await MongoUtil.addTime(discordId, userDailyTime);
+        if (!response){
+            return -1;
         }
-        return 0;
-    }catch (error){
-        logger.error(`Error on daily func : ${error}`)
-        await conn.rollback();
-        return -1; //알 수 없는 오류 발생
+    }else{
+        const response = await MongoUtil.modifyTime(discordId, userDailyTime);
+        if (!response){
+            return -1;
+        }
     }
+    return 0;
+
 }
 
 
 module.exports = {
     name: 'daily',
-    async execute(message, userCommandStatus, args) {
-        if (userCommandStatus[message.author.id]){
-            return;
-        }
-        try{
-            userCommandStatus[message.author.id] = true
-            const { author } = message;
-            await getUserCron(author, message, userCommandStatus);
-        }catch(error){
-            logger.error(error)
-        }
-
-
+    async execute(message: Message) {
+        await getUserDailyTime(message);
     }
 };
 
