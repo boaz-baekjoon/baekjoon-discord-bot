@@ -63,12 +63,12 @@ export class MongoUtil{
     }
 
     //add time at which user wants to get notification
-    static async addTime(userDiscordId: string, userCron: string): Promise<Boolean>{
+    static async addTime(userDiscordId: string, userDailyTime: string): Promise<Boolean>{
         const session = await mongoose.startSession();
         session.startTransaction();
         try{
-            await User.updateOne({discord_id: userDiscordId}, {cron: userCron}, {session: session});
-            logger.info(`Adding time ${userCron} to user ${userDiscordId}`);
+            await User.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime}, {session: session});
+            logger.info(`Adding time ${userDailyTime} to user ${userDiscordId}`);
             await session.commitTransaction();
             return true;
         }catch (error){
@@ -85,7 +85,7 @@ export class MongoUtil{
         const session = await mongoose.startSession();
         session.startTransaction();
         try {
-            await User.updateOne({discord_id: userDiscordId}, {cron: null}), {session: session};
+            await User.updateOne({discord_id: userDiscordId}, {daily_time: null}), {session: session};
             logger.info(`Deleting time of user ${userDiscordId}`);
             await session.commitTransaction();
             return true;
@@ -99,12 +99,12 @@ export class MongoUtil{
     }
 
     //modify time at which user wants to get notification, and will be executed for users who already activated daily notification
-    static async modifyTime(userDiscordId: String, userCron: String): Promise<Boolean>{
+    static async modifyTime(userDiscordId: String, userDailyTime: String): Promise<Boolean>{
         const session = await mongoose.startSession();
         session.startTransaction();
         try {
-            await User.updateOne({discord_id: userDiscordId}, {cron: userCron});
-            logger.info(`Modifying time of user ${userDiscordId} to ${userCron}`);
+            await User.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime});
+            logger.info(`Modifying time of user ${userDiscordId} to ${userDailyTime}`);
             await session.commitTransaction();
             return true;
         }catch(error){
@@ -132,10 +132,10 @@ export class MongoUtil{
     }
 
     //for sending daily problem notification at corresponding time
-    static async findUserWithUserCron(userCron: string): Promise<any>{
+    static async findUserWithUserDailyTime(userDailyTime: string): Promise<any>{
         try {
-            const users = await User.find({cron: userCron});
-            logger.info(`Finding users with time ${userCron}`);
+            const users = await User.find({daily_time: userDailyTime});
+            logger.info(`Finding users with time ${userDailyTime}`);
             if (users){
                 return users;
             }else {
