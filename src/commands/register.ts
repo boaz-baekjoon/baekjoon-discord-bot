@@ -1,83 +1,78 @@
-import {DiscordQueryRunner} from "../util/discord_db";
 import {logger} from "../logger";
+import {MongoUtil} from "../util/mongoUtil";
+import {Message} from "discord.js";
 
-async function registerId(conn, message, isAltering, userCommandStatus) {
-    message.reply("등록하실 백준 아이디를 입력해주세요.");
+async function registerId(message: Message, isUserAlreadyRegistered: boolean) {
+    await message.reply("등록하실 백준 아이디를 입력해주세요.");
     const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
     const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
-    idCollector.on('collect', async msg => {
-        const bojId = msg.content;
-        let response;
 
-        if(isAltering === true){
-            response = DiscordQueryRunner.modifyBojId(conn, message.author.id, bojId);
+    idCollector.on('collect', async msg => {
+        let response: boolean;
+        if(isUserAlreadyRegistered === true){
+            response = await MongoUtil.modifyBojIdOfUser(message.author.id, msg.content);
         }else{
-            response = DiscordQueryRunner.addBojId(conn, message.author.id, bojId);
+            response = await MongoUtil.addUser(message.author.id, msg.content);
         }
 
         if (response){
-            message.reply(isAltering ? "정상적으로 변경되었습니다." : "정상적으로 등록되었습니다.")
-            logger.info(`${message.author.id} / ${bojId} 가입 완료`)
+            await message.reply(isUserAlreadyRegistered ? "정상적으로 변경되었습니다." : "정상적으로 등록되었습니다.")
+            logger.info(`${message.author.id} / ${msg.content} 가입 완료`)
         }else{
-            message.reply("알 수 없는 오류가 발생했습니다.")
+            await message.reply("알 수 없는 오류가 발생했습니다.")
         }
     })
+
     idCollector.on('end', collected => {
         if (collected.size === 0){
             message.reply("입력 시간이 만료되었습니다.")
         }
-        userCommandStatus[message.author.id] = false
     })
 }
 
-
 module.exports = {
     name: '아이디 등록',
-    async execute (message, userCommandStatus, args) {
-        if (userCommandStatus[message.author.id]) { //해당 사용자가 이미 다른 명령어를 실행하고 있는 경우
-            return;
-        }
-        let conn;
+    async execute (message: Message) {
         try{
-            userCommandStatus[message.author.id] = true; //명령어를 실행하는 상태로 전환
+            const user = await MongoUtil.findUserWithDiscordId(message.author.id);
 
-            conn = await DiscordQueryRunner.getConnection()
-            const response = await DiscordQueryRunner.getBojID(conn, message.author.id)
+            if (user){
+                await message.reply(`이미 ${user['boj_id']}로 등록이 된 상태입니다. 변경하시려면 '변경', 삭제하시려면 '삭제'를 입력해주세요. 명령어를 취소하려면 '취소'를 입력해주세요.`)
 
-
-            if (response.length > 0){
-                message.reply(`이미 ${response[0]['boj_id']}로 등록이 된 상태입니다. 변경하시려면 '변경', 삭제하시려면 '삭제'를 입력해주세요. 명령어를 취소하려면 '취소'를 입력해주세요.`)
-
-                const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!') && (m.content === '변경' || m.content === '삭제' || m.content === '취소');
+                const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!')
+                    && (m.content === '변경' || m.content === '삭제' || m.content === '취소');
                 const responseCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
 
                 responseCollector.on('collect', async msg => {
-                    if (msg.content === '변경'){
-                        await registerId(conn, message, true, userCommandStatus)
-                    }else if (msg.content === '삭제'){
-                        const response = await DiscordQueryRunner.deleteBojId(conn, message.author.id)
-                        if (response){
-                            message.reply("정상적으로 삭제되었습니다.")
-                        }else{
-                            message.reply("알 수 없는 오류가 발생했습니다.")
-                        }
-                    }else if (msg.content === '취소'){
-                        message.reply("명령을 취소하셨습니다.");
+                    switch (msg.content) {
+                        case '변경':
+                            await registerId(message, true);
+                            break;
+                        case '삭제':
+                            const response = await MongoUtil.deleteUser(message.author.id);
+                            if (response){
+                                await message.reply("정상적으로 삭제되었습니다.")
+                            }else{
+                                await message.reply("알 수 없는 오류가 발생했습니다.")
+                            }
+                            break;
+                        case '취소':
+                            await message.reply("명령을 취소하셨습니다.");
+                            break;
                     }
                 })
+
                 responseCollector.on('end', collected => {
                     if (collected.size === 0){
                         message.reply("입력 시간이 만료되었습니다.")
                     }
-                    userCommandStatus[message.author.id] = false
                 })
+
             }else {
-                await registerId(conn, message, false, userCommandStatus)
+                await registerId(message, false)
             }
-        }catch(error){
+        }catch(error) {
             logger.error(error.message)
-        }finally {
-            conn.release();
         }
     },
 };

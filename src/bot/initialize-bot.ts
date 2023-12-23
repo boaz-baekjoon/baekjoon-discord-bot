@@ -1,4 +1,5 @@
 import {Client, Collection, GatewayIntentBits} from "discord.js";
+import { mongoConnect } from "../config/mongoDb";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 
@@ -11,6 +12,9 @@ export async function initializeBot(client: Client){
         //Login Discord bot with Discord_Token
         await client.login(process.env.DISCORD_TOKEN);
         console.log("Discord Bot Logged In")
+
+        //Connect to MongoDB
+        mongoConnect();
 
         //Loading Commands
         const commands = fs.readdirSync("./src/commands").filter(file => file.endsWith(".ts"));

@@ -1,41 +1,16 @@
 import {EmbedBuilder} from 'discord.js';
 
 export class BojProblem{
-    private problemId: number;
-    private title: string;
-    private level: number;
-    private tags: string[];
-    constructor(problemId, title, level, tags) {
+    problemId: number;
+    title: string;
+    level: number;
+    tags: string[];
+    constructor(problemId: number, title: string, level: number, tags: string[]) {
         this.problemId = problemId;
         this.title = title;
         this.level = level;
         this.tags = tags;
     }
-
-    setProblemId(problemId){
-        this.problemId = problemId;
-    }
-    setTitle(title){
-        this.title = title;
-    }
-    setLevel(level){
-        this.level = level;
-    }
-    setTags(tags){
-        this.tags = tags;
-    }
-
-    getProblemId(){
-        return this.problemId;
-    }
-
-    getTitle(){
-        return this.title;
-    }
-    getTags(){
-        return this.tags;
-    }
-
     getLevel(){
         let probLevel = this.level
         if (1 <= probLevel && probLevel <= 5){
@@ -55,7 +30,7 @@ export class BojProblem{
         }
     }
 
-    getEmbedMsg(msgTitle){
+    getEmbedMsg(msgTitle: string){
         return new EmbedBuilder()
             .setColor(0x3498DB)
             .setAuthor({name: 'BOJ Bot'})
@@ -76,7 +51,7 @@ export class BojProblem{
 
 }
 
-export function getProblemErrorMsg(msgTitle){
+export function getProblemErrorMsg(){
     return new BojProblem(-1, "알 수 없는 오류가 발생했습니다.", 0, [])
 }
 
