@@ -5,7 +5,7 @@ export class BojProblem{
     title: string;
     level: number;
     tags: string[];
-    constructor(problemId, title, level, tags) {
+    constructor(problemId: number, title: string, level: number, tags: string[]) {
         this.problemId = problemId;
         this.title = title;
         this.level = level;
@@ -30,7 +30,7 @@ export class BojProblem{
         }
     }
 
-    getEmbedMsg(msgTitle){
+    getEmbedMsg(msgTitle: string){
         return new EmbedBuilder()
             .setColor(0x3498DB)
             .setAuthor({name: 'BOJ Bot'})
@@ -51,7 +51,7 @@ export class BojProblem{
 
 }
 
-export function getProblemErrorMsg(msgTitle){
+export function getProblemErrorMsg(){
     return new BojProblem(-1, "알 수 없는 오류가 발생했습니다.", 0, [])
 }
 
