@@ -12,16 +12,16 @@ export class modelUtil{
                     problem_num: numberOfProblems
                 },
                 {
-        timeout: 3000
-    });
-    if (Array.isArray(response.data[userId])) {
-    return response.data[userId];
-}
-} catch(error) {
-    logger.error(error.message)
-}
-return [];
-}
+                timeout: 3000
+            });
+            if (Array.isArray(response.data[userId])) {
+                return response.data[userId];
+            }
+        } catch(error) {
+            logger.error(error.message)
+        }
+        return [];
+    }
 
 static async getSimilarProbWithId(probId){
         let problem_arr = []

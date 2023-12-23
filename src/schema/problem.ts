@@ -1,41 +1,16 @@
 import {EmbedBuilder} from 'discord.js';
 
 export class BojProblem{
-    private problemId: number;
-    private title: string;
-    private level: number;
-    private tags: string[];
+    problemId: number;
+    title: string;
+    level: number;
+    tags: string[];
     constructor(problemId, title, level, tags) {
         this.problemId = problemId;
         this.title = title;
         this.level = level;
         this.tags = tags;
     }
-
-    setProblemId(problemId){
-        this.problemId = problemId;
-    }
-    setTitle(title){
-        this.title = title;
-    }
-    setLevel(level){
-        this.level = level;
-    }
-    setTags(tags){
-        this.tags = tags;
-    }
-
-    getProblemId(){
-        return this.problemId;
-    }
-
-    getTitle(){
-        return this.title;
-    }
-    getTags(){
-        return this.tags;
-    }
-
     getLevel(){
         let probLevel = this.level
         if (1 <= probLevel && probLevel <= 5){
