@@ -9,7 +9,6 @@ export async function getRecommendedProblem(user_id: string) {
     let bojProblem = new BojProblem(null, null, null, null);
     try{
         const problem_arr = await modelUtil.getSingleProblem(user_id,1)
-        console.log(problem_arr);
         if (problem_arr.length === 0){
             logger.warn(`${user_id}/ 모델 서버 오류로 인한 랜덤 문제 반환`)
             return await getRandomProblem()
@@ -46,7 +45,6 @@ async function getRandomProblem() {
             bojProblem.title = response.data.titleKo + " (모델 서버 오류로 인한 랜덤 문제)";
             bojProblem.level = response.data.level;
             bojProblem.tags = response.data.tags;
-            console.log(response)
             return bojProblem;
         } catch (error) {
             logger.warn(`문제 요청 실패. 다시 요청 시도 (${i + 1}번쨰 시도)`)
