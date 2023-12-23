@@ -21,7 +21,7 @@ export async function getRecommendedProblem(user_id: string) {
         bojProblem.problemId = response.data.problemId;
         bojProblem.title = response.data.titleKo;
         bojProblem.level = response.data.level;
-        bojProblem.tags = response.data.tags;
+        bojProblem.tags = response.data.tags.map((tag) => tag.key);
     }catch(error){
         logger.error(error);
         logger.warn(`${user_id}/ 모델 서버 오류로 인한 랜덤 문제 반환`);
