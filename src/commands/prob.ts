@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {BojProblem, getProblemErrorMsg} from "../schema/problem";
 import {logger} from '../logger'
-import {modelUtil} from "../util/model_server_api";
+import {modelUtil} from "../util/modelUtil";
 import {MongoUtil} from "../util/mongoUtil";
 import {Message} from "discord.js";
 
@@ -50,7 +50,7 @@ async function getRandomProblem() {
             logger.warn(`문제 요청 실패. 다시 요청 시도 (${i + 1}번쨰 시도)`)
         }
     }
-    return getProblemErrorMsg("알 수 없는 오류가 발생했습니다.");
+    return getProblemErrorMsg();
 }
 
 export async function execute(message: Message) {
