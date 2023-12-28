@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {BojProblem, getProblemErrorMsg} from "../schema/problem";
+import {BojProblem, getProblemErrorMsg} from "../schema/problem_class";
 import {logger} from '../logger'
 import {modelUtil} from "../util/modelUtil";
 import {MongoUtil} from "../util/mongoUtil";
