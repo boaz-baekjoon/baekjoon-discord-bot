@@ -1,6 +1,8 @@
 import * as mongoose from 'mongoose';
 import { User } from '../schema/user';
 import {logger} from "../logger";
+import {Problem} from "../schema/problem_schema";
+import {BojProblem} from "../schema/problem_class";
 
 export class MongoUtil{
     //map discordId and bojId, and save it to mongoDB
@@ -179,5 +181,21 @@ export class MongoUtil{
         }catch (error){
             logger.error(error.message);
         }
+    }
+
+    //find problem with problemId
+    static async findProblemWithProblemId(problemId: number): Promise<any>{
+        try {
+            const problem = await Problem.find({problem_id: problemId});
+            if (problem) {
+                const {problem_id, problem_title, problem_level, tag_key} = problem[0];
+                const tags = problem.map((problem: any) => problem.tag_key);
+
+                return new BojProblem(problem_id, problem_title, problem_level, tags);
+            }
+        }catch (error){
+            logger.error(error);
+        }
+        return null;
     }
 }
