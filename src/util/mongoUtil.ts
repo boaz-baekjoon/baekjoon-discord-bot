@@ -22,12 +22,14 @@ export class MongoUtil{
             await session.commitTransaction();
             return true;
         }catch (error: any){
+            // @ts-ignore
             if(session){
                 await session.abortTransaction();
             }
             logger.error(error.message);
             return false;
         }finally {
+            // @ts-ignore
             if (session){
                 await session.endSession();
             }
@@ -46,12 +48,14 @@ export class MongoUtil{
             await session.commitTransaction();
             return true;
         }catch(error: any){
+            // @ts-ignore
             if(session){
                 await session.abortTransaction();
             }
             logger.error(error.message);
             return false;
         }finally {
+            // @ts-ignore
             if (session){
                 await session.endSession();
             }
@@ -70,12 +74,14 @@ export class MongoUtil{
             await session.commitTransaction();
             return true;
         }catch(error: any){
+            // @ts-ignore
             if(session){
                 await session.abortTransaction();
             }
             logger.error(error.message);
             return false;
         }finally {
+            // @ts-ignore
             if (session){
                 await session.endSession();
             }
@@ -94,12 +100,14 @@ export class MongoUtil{
             await session.commitTransaction();
             return true;
         }catch (error: any){
+            // @ts-ignore
             if(session){
                 await session.abortTransaction();
             }
             logger.error(error.message);
             return false;
         }finally {
+            // @ts-ignore
             if (session){
                 await session.endSession();
             }
@@ -118,12 +126,14 @@ export class MongoUtil{
             await session.commitTransaction();
             return true;
         }catch(error: any){
+            // @ts-ignore
             if(session){
                 await session.abortTransaction();
             }
             logger.error(error.message);
             return false;
         }finally {
+            // @ts-ignore
             if (session){
                 await session.endSession();
             }
@@ -142,12 +152,14 @@ export class MongoUtil{
             await session.commitTransaction();
             return true;
         }catch(error: any){
+            // @ts-ignore
             if(session){
                 await session.abortTransaction();
             }
             logger.error(error.message);
             return false;
         }finally {
+            // @ts-ignore
             if (session){
                 await session.endSession();
             }
