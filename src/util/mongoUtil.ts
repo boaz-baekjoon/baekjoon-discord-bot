@@ -8,7 +8,7 @@ import {ClientSession} from "typeorm";
 export class MongoUtil{
     //map discordId and bojId, and save it to mongoDB
     static async addUser(userDiscordId: string, userBojId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try{
             session = await mongoose.startSession();
             session.startTransaction();
@@ -38,7 +38,7 @@ export class MongoUtil{
 
     //delete user with discordId
     static async deleteUser(userDiscordId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try{
             session = await mongoose.startSession();
             session.startTransaction();
@@ -64,7 +64,7 @@ export class MongoUtil{
 
     //modify bojId of user with discordId
     static async modifyBojIdOfUser(userDiscordId: string, userBojId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try {
             session = await mongoose.startSession();
             session.startTransaction();
@@ -90,7 +90,7 @@ export class MongoUtil{
 
     //add time at which user wants to get notification
     static async addTime(userDiscordId: string, userDailyTime: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try{
             session = await mongoose.startSession();
             session.startTransaction();
@@ -116,7 +116,7 @@ export class MongoUtil{
 
     //deactivate daily problem notification
     static async deleteTime(userDiscordId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try {
             session = await mongoose.startSession();
             session.startTransaction();
@@ -142,7 +142,7 @@ export class MongoUtil{
 
     //modify time at which user wants to get notification, and will be executed for users who already activated daily notification
     static async modifyTime(userDiscordId: String, userDailyTime: String): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try {
             session = await mongoose.startSession();
             session.startTransaction();
