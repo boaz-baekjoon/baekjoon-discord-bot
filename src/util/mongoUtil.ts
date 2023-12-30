@@ -1,13 +1,14 @@
 import * as mongoose from 'mongoose';
-import { User } from '../schema/user';
-import {logger} from "../logger";
-import {Problem} from "../schema/problem_schema";
-import {BojProblem} from "../schema/problem_class";
+import { User } from '../schema/user.js';
+import {logger} from "../logger.js";
+import {Problem} from "../schema/problem_schema.js";
+import {BojProblem} from "../schema/problem_class.js";
+import {ClientSession} from "typeorm";
 
 export class MongoUtil{
     //map discordId and bojId, and save it to mongoDB
     static async addUser(userDiscordId: string, userBojId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try{
             session = await mongoose.startSession();
             session.startTransaction();
@@ -20,7 +21,7 @@ export class MongoUtil{
             logger.info(`Adding user ${userDiscordId} with boj id ${userBojId}`);
             await session.commitTransaction();
             return true;
-        }catch (error){
+        }catch (error: any){
             if(session){
                 await session.abortTransaction();
             }
@@ -35,7 +36,7 @@ export class MongoUtil{
 
     //delete user with discordId
     static async deleteUser(userDiscordId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try{
             session = await mongoose.startSession();
             session.startTransaction();
@@ -44,7 +45,7 @@ export class MongoUtil{
             logger.info(`Deleting user ${userDiscordId}`);
             await session.commitTransaction();
             return true;
-        }catch(error){
+        }catch(error: any){
             if(session){
                 await session.abortTransaction();
             }
@@ -59,7 +60,7 @@ export class MongoUtil{
 
     //modify bojId of user with discordId
     static async modifyBojIdOfUser(userDiscordId: string, userBojId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try {
             session = await mongoose.startSession();
             session.startTransaction();
@@ -68,7 +69,7 @@ export class MongoUtil{
             logger.info(`Modifying boj id of user ${userDiscordId} to ${userBojId}`);
             await session.commitTransaction();
             return true;
-        }catch(error){
+        }catch(error: any){
             if(session){
                 await session.abortTransaction();
             }
@@ -83,7 +84,7 @@ export class MongoUtil{
 
     //add time at which user wants to get notification
     static async addTime(userDiscordId: string, userDailyTime: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try{
             session = await mongoose.startSession();
             session.startTransaction();
@@ -92,7 +93,7 @@ export class MongoUtil{
             logger.info(`Adding time ${userDailyTime} to user ${userDiscordId}`);
             await session.commitTransaction();
             return true;
-        }catch (error){
+        }catch (error: any){
             if(session){
                 await session.abortTransaction();
             }
@@ -107,7 +108,7 @@ export class MongoUtil{
 
     //deactivate daily problem notification
     static async deleteTime(userDiscordId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try {
             session = await mongoose.startSession();
             session.startTransaction();
@@ -116,7 +117,7 @@ export class MongoUtil{
             logger.info(`Deleting time of user ${userDiscordId}`);
             await session.commitTransaction();
             return true;
-        }catch(error){
+        }catch(error: any){
             if(session){
                 await session.abortTransaction();
             }
@@ -131,7 +132,7 @@ export class MongoUtil{
 
     //modify time at which user wants to get notification, and will be executed for users who already activated daily notification
     static async modifyTime(userDiscordId: String, userDailyTime: String): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
+        let session: mongoose.mongo.ClientSession = new mongoose.mongo.ClientSession();
         try {
             session = await mongoose.startSession();
             session.startTransaction();
@@ -140,7 +141,7 @@ export class MongoUtil{
             logger.info(`Modifying time of user ${userDiscordId} to ${userDailyTime}`);
             await session.commitTransaction();
             return true;
-        }catch(error){
+        }catch(error: any){
             if(session){
                 await session.abortTransaction();
             }
@@ -163,7 +164,7 @@ export class MongoUtil{
             }else {
                 return null;
             }
-        }catch (error){
+        }catch (error: any){
             logger.error(error.message);
         }
     }
@@ -178,7 +179,7 @@ export class MongoUtil{
             }else {
                 return null;
             }
-        }catch (error){
+        }catch (error: any){
             logger.error(error.message);
         }
     }
@@ -193,7 +194,7 @@ export class MongoUtil{
 
                 return new BojProblem(problem_id, problem_title, problem_level, tags);
             }
-        }catch (error){
+        }catch (error: any){
             logger.error(error);
         }
         return null;

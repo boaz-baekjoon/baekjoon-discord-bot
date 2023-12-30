@@ -1,9 +1,9 @@
-import { client } from '../index'
-import { embedWelcome } from './guideMessage'
-import { logger } from '../logger'
+import { client } from '../index.js'
+import { embedWelcome } from './guideMessage.js'
+import { logger } from '../logger.js'
 import {Guild, TextChannel} from "discord.js";
 
-client.on("guildCreate", async(guild) => {
+client.on("guildCreate", async(guild: Guild) => {
     let channel = guild.channels.cache.find(channel => channel.type === 0);
     logger.info(`${guild.ownerId} Uses Baekjoon bot newly`)
     if (!channel){

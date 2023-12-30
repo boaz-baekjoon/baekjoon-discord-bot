@@ -1,6 +1,6 @@
-import { getRecommendedProblem } from '../commands/prob'
-import { logger}  from '../logger'
-import {MongoUtil} from "../util/mongoUtil";
+import { getRecommendedProblem } from '../commands/prob.js'
+import { logger}  from '../logger.js'
+import {MongoUtil} from "../util/mongoUtil.js";
 import {Client} from "discord.js";
 
 export async function sendDailyProblem(client: Client) {

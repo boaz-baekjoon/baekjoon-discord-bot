@@ -54,5 +54,3 @@ export class BojProblem{
 export function getProblemErrorMsg(){
     return new BojProblem(-1, "알 수 없는 오류가 발생했습니다.", 0, [])
 }
-
-module.exports = {BojProblem, getProblemErrorMsg}

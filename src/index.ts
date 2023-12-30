@@ -1,8 +1,8 @@
 import {Client, Collection, GatewayIntentBits} from 'discord.js';
-import { sendDailyProblem } from './bot/cron'
+import { sendDailyProblem } from './bot/cron.js'
 import * as cron from 'node-cron';
-import { logger } from './logger'
-import {initializeBot} from "./bot/initialize-bot";
+import { logger } from './logger.js'
+import {initializeBot} from "./bot/initialize-bot.js";
 
 declare module "discord.js" {
     export interface Client {
@@ -31,7 +31,8 @@ client.on('messageCreate', message => {
         if (message.author.bot || !message.guild || !message.content.startsWith('!')) return;
 
         //Slice the command and arguments
-        const command = message.content.slice(1).split(/ +/).shift().toLowerCase();
+        // @ts-ignore
+        const command: string = message.content.slice(1).split(/ +/).shift().toLowerCase();
 
         //Ignore if command is not in commands
         if (!client.commands.has(command)) {

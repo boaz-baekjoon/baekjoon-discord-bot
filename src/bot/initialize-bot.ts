@@ -1,5 +1,5 @@
 import {Client, Collection, GatewayIntentBits} from "discord.js";
-import { mongoConnect } from "../config/mongoDb";
+import { mongoConnect } from "../config/mongoDb.js";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 
@@ -17,10 +17,10 @@ export async function initializeBot(client: Client){
         mongoConnect();
 
         //Loading Commands
-        const commands = fs.readdirSync("./src/commands").filter(file => file.endsWith(".ts"));
+        const commands = fs.readdirSync("./dist/commands").filter(file => file.endsWith(".js"));
         for (const file of commands) {
             const commandName = file.split(".")[0];
-            const command = require(`../commands/${file}`);
+            const command = await import(`../commands/${file}`);
 
             console.log(`Attempting to load command ${commandName}`);
             client.commands.set(commandName, command);
