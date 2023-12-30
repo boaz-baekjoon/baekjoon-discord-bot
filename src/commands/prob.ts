@@ -1,8 +1,8 @@
 import axios from 'axios'
-import {BojProblem, getProblemErrorMsg} from "../schema/problem_class";
-import {logger} from '../logger'
-import {modelUtil} from "../util/modelUtil";
-import {MongoUtil} from "../util/mongoUtil";
+import {BojProblem, getProblemErrorMsg} from "../schema/problem_class.js";
+import {logger} from '../logger.js'
+import {modelUtil} from "../util/modelUtil.js";
+import {MongoUtil} from "../util/mongoUtil.js";
 import {Message} from "discord.js";
 
 export async function getRecommendedProblem(user_id: string) {

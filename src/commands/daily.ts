@@ -6,8 +6,8 @@
 // 4. 형식이 잘못되면 오류 메시지 및 "다시 입력해주세요".
 // 5. 쿼리 실행 후 등록
 
-import { logger } from '../logger'
-import { MongoUtil } from '../util/mongoUtil'
+import { logger } from '../logger.js'
+import {MongoUtil} from '../util/mongoUtil.js';
 import {Message} from "discord.js";
 
 async function getUserDailyTime(message: Message){
@@ -24,7 +24,7 @@ async function getUserDailyTime(message: Message){
             await message.reply(`${hour}시 ${min}분으로 알림이 설정된 상태입니다. 알림을 비활성화하려면 '비활성화', 변경하시려면 '변경', 명령을 취소하려면 '취소'를 입력해주세요`);
 
             // Filter for user response
-            const responseFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!') &&
+            const responseFilter = (m: { author: { bot: any; id: string; }; content: string; }) => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!') &&
                 (m.content === '비활성화' || m.content === '변경' || m.content === '취소');
             const responseCollector = message.channel.createMessageCollector({
                 filter: responseFilter,
@@ -74,7 +74,7 @@ async function getUserDailyTime(message: Message){
 function getInputOfDailyTime(message: Message, isUserDailyTimeAlreadySet: boolean) {
     message.channel.send("원하시는 시간을 24시간제로 다음과 같이 입력해주세요. (HH MM), 취소를 원하실 경우 '취소'를 입력해주세요.");
 
-    const botFilter = m => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
+    const botFilter = (m: { author: { bot: any; id: string; }; content: string; }) => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
     const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
 
     idCollector.on('collect', async msg => {
@@ -139,11 +139,7 @@ async function addDailyTimeOfUser(discordId: string, userInput: string, isDailyT
 
 }
 
-
-module.exports = {
-    name: 'daily',
-    async execute(message: Message) {
-        await getUserDailyTime(message);
-    }
-};
+export async function execute(message: Message) {
+    await getUserDailyTime(message);
+}
 

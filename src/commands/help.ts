@@ -1,9 +1,6 @@
-import {embedWelcome} from '../bot/guideMessage';
+import {embedWelcome} from '../bot/guideMessage.js';
 import {Message} from "discord.js";
 
-module.exports = {
-    name: 'Daily Notification',
-    execute(message: Message) {
-        message.channel.send({embeds: [embedWelcome]})
-    },
-};
+async function execute(message: Message){
+    message.channel.send({embeds: [embedWelcome]})
+}
