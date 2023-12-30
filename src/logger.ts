@@ -1,5 +1,5 @@
 import * as winston from 'winston';
-import * as winstonDaily from 'winston-daily-rotate-file';
+import winstonDaily from 'winston-daily-rotate-file';
 import * as process from 'process';
 
 const { combine, timestamp, label, printf } = winston.format;

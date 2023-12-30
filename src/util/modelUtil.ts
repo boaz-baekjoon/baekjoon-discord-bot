@@ -1,11 +1,11 @@
 import axios from 'axios'
-import { logger } from '../logger'
+import { logger } from '../logger.js'
 import * as dotenv from 'dotenv'
 
 dotenv.config()
 
 export class modelUtil{
-    static async getSingleProblem(userId, numberOfProblems){
+    static async getSingleProblem(userId: string, numberOfProblems: number){
         try {
             const response = await axios.post(`${process.env.BASE_URL}/baekjun/user_id` , {
                     user_id_list: [userId],
@@ -17,13 +17,13 @@ export class modelUtil{
             if (Array.isArray(response.data[userId])) {
                 return response.data[userId];
             }
-        } catch(error) {
+        } catch(error: any) {
             logger.error(error.message)
         }
         return [];
     }
 
-static async getSimilarProbWithId(probId){
+static async getSimilarProbWithId(probId: number){
         let problem_arr = []
         try{
             const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_id` , {
@@ -35,13 +35,13 @@ static async getSimilarProbWithId(probId){
             if (Array.isArray(response.data['problems'])) {
                 problem_arr = response.data['problems'];
             }
-        }catch(error){
+        }catch(error: any){
             logger.error(error.message)
         }
         return problem_arr;
     }
 
-    static async getSimilarProbWithContext(probContext){
+    static async getSimilarProbWithContext(probContext: string){
         let problem_arr= []
         try{
             const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_text` , {
@@ -53,7 +53,7 @@ static async getSimilarProbWithId(probId){
             if (Array.isArray(response.data['problems'])) {
                 problem_arr = response.data['problems'];
             }
-        }catch(error){
+        }catch(error: any){
             logger.error(error.message)
         }
         return problem_arr;

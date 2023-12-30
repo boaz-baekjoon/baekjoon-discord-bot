@@ -2,14 +2,25 @@
   "compilerOptions": {
     "allowJs": true,
     "target": "ES2020",
+    "module": "NodeNext",
+    "rootDir": "./src",
     "outDir": "./dist",
-    "moduleResolution": "Node",
-    "lib": ["es2020", "DOM", "DOM.Iterable"],
-    "preserveValueImports": false
+    "moduleResolution": "NodeNext",
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "preserveValueImports": false,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules", "dist"],
-  "ts-node": {
-    "esm": true
-  }
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+
 }
