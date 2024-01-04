@@ -1,5 +1,5 @@
 import { client } from '../index.js'
-import { embedWelcome } from './guideMessage.js'
+import { embedWelcome } from '../embedMessage/guideMessage.js'
 import { logger } from '../logger.js'
 import {Guild, TextChannel} from "discord.js";
 

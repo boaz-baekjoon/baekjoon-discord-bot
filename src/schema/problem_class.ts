@@ -1,4 +1,5 @@
 import {EmbedBuilder} from 'discord.js';
+import {logger} from "../logger.js";
 
 export class BojProblem{
     problemId: number;
@@ -31,22 +32,28 @@ export class BojProblem{
     }
 
     getEmbedMsg(msgTitle: string){
-        return new EmbedBuilder()
-            .setColor(0x3498DB)
-            .setAuthor({name: 'BOJ Bot'})
-            .setTitle(msgTitle)
-            .addFields(
-                {name: '문제 번호:', value: `${this.problemId}`, inline: false},
-                {name: '문제:', value: `${this.title}`, inline: false},
-                {name: '난이도:', value: `${this.getLevel()}`, inline: false},
-                {
-                    name: '알고리즘 분류:',
-                    value: this.tags.length > 0 ? `${this.tags.join(', ')}` : '알고리즘 분류가 되어있지 않습니다.',
-                    inline: false
-                },
-                {name: '링크', value: `https://www.acmicpc.net/problem/${this.problemId}`, inline: false}
-            )
-            .setTimestamp();
+        try{
+            return new EmbedBuilder()
+                .setColor(0x3498DB)
+                .setAuthor({name: 'BOJ Bot'})
+                .setTitle(msgTitle)
+                .addFields(
+                    {name: '문제 번호:', value: `${this.problemId}`, inline: false},
+                    {name: '문제:', value: `${this.title}`, inline: false},
+                    {name: '난이도:', value: `${this.getLevel()}`, inline: false},
+                    {
+                        name: '알고리즘 분류:',
+                        value: this.tags.length > 0 ? `${this.tags.join(', ')}` : '알고리즘 분류가 되어있지 않습니다.',
+                        inline: false
+                    },
+                    {name: '링크', value: `https://www.acmicpc.net/problem/${this.problemId}`, inline: false}
+                )
+                .setTimestamp();
+        }catch (error){
+            logger.error(error)
+            return getProblemErrorMsg();
+        }
+
     }
 
 }

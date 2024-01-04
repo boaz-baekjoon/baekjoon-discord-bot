@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv'
 
 dotenv.config()
 
-export class modelUtil{
+export class ModelUtil {
     static async getSingleProblem(userId: string, numberOfProblems: number){
         try {
             const response = await axios.post(`${process.env.BASE_URL}/baekjun/user_id` , {
@@ -23,23 +23,23 @@ export class modelUtil{
         return [];
     }
 
-static async getSimilarProbWithId(probId: number){
-        let problem_arr = []
-        try{
-            const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_id` , {
-                timeout: 3000,
-                params:{
-                    problem_id: probId,
+    static async getSimilarProbWithId(probId: number){
+            let problem_arr = []
+            try{
+                const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_id` , {
+                    timeout: 3000,
+                    params:{
+                        problem_id: probId,
+                    }
+                });
+                if (Array.isArray(response.data['problems'])) {
+                    problem_arr = response.data['problems'];
                 }
-            });
-            if (Array.isArray(response.data['problems'])) {
-                problem_arr = response.data['problems'];
+            }catch(error: any){
+                logger.error(error.message)
             }
-        }catch(error: any){
-            logger.error(error.message)
+            return problem_arr;
         }
-        return problem_arr;
-    }
 
     static async getSimilarProbWithContext(probContext: string){
         let problem_arr= []
@@ -52,6 +52,26 @@ static async getSimilarProbWithId(probId: number){
             });
             if (Array.isArray(response.data['problems'])) {
                 problem_arr = response.data['problems'];
+            }
+        }catch(error: any){
+            logger.error(error.message)
+        }
+        return problem_arr;
+    }
+
+    static async getProblemWithCategory(userId: string, categoryId: number){
+        let problem_arr = []
+        try{
+            const response = await axios.post(`${process.env.BASE_URL}/baekjun/user_id` , {
+                    user_id_list: [userId],
+                    category: categoryId,
+                    problem_num: 1
+                },
+                {
+                    timeout: 3000
+                });
+            if (Array.isArray(response.data[userId])) {
+                problem_arr = response.data[userId];
             }
         }catch(error: any){
             logger.error(error.message)

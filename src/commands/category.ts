@@ -1,32 +1,51 @@
-import {EmbedBuilder, Message} from "discord.js";
+import {Message} from "discord.js";
+import {categoryList} from "../embedMessage/categoryMessage.js";
+import {ModelUtil} from "../util/modelUtil.js";
+import {MongoUtil} from "../util/mongoUtil.js";
+import {logger} from "../logger.js";
+import {getRandomProblem} from "./prob.js";
+
+async function getProblemWithCategory(user_id: string, category: number) {
+    try{
+        const problem_arr = await ModelUtil.getProblemWithCategory(user_id, category);
+        if (problem_arr.length === 0){
+            logger.warn(`${user_id}/ 모델 서버 오류로 인한 랜덤 문제 반환`)
+            return await getRandomProblem()
+        }
+        return await MongoUtil.findProblemWithProblemId(problem_arr[0]);
+    }catch(error){
+        logger.error(error);
+        return await getRandomProblem();
+    }
+}
 
 export async function execute(message: Message){
-    const categoryList = new EmbedBuilder()
-        .setColor(0x3498DB)
-        .setAuthor({name: 'BOJ Bot'})
-        .setTitle("알고리즘 분류 목록입니다.")
-        .setDescription("원하시는 문제 유형을 !{숫자}로 입력해주세요!")
-        .addFields(
-            { name: '1: 기본 알고리즘 및 구현', value: '구현, 시뮬레이션과 같이 구현 능력을 요구하는 문제', inline: false },
-            { name: '2: 자료 구조', value: '\n각종 자료구조 활용 능력을 요구하는 문제', inline: false },
-            { name: '3: 동적 프로그래밍', value: '\nDP에 대해 연습할 수 있는 문제', inline: false },
-            { name: '4: 그래프 이론', value: '\nDFS, BFS을 포함한 그래프와 관련된 문제', inline: false },
-            { name: '5: 탐색 알고리즘', value: '\n이진 탐색, 완전 탐색과 같은 탐색에 관한 문제', inline: false },
-            { name: '6: 문자열 처리', value: '\n문자열을 다루는 능력을 필요로 하는 문제.', inline: false },
-            { name: '7: 수학적 알고리즘', value: '\n수학적 사고력을 요구하는 문제.', inline: false },
-            { name: '8: 최적화 문제', value: '\nGreedy, Divide and Conquer 등, 다양한 최적화 기법을 사용해야 하는 문제', inline: false },
-            { name: '9: 기하학적 알고리즘', value: '\n기하학과 관련된 문제', inline: false },
-            { name: '10: 고급 알고리즘', value: '\n심화 알고리즘 사용을 요구하는 문제', inline: false },
-            { name: '11: 기타', value: '\n그 외의 알고리즘 관련 문제로 분류된 문제', inline: false }
-        )
-        .setTimestamp()
+    try{
+        await message.channel.send({embeds: [categoryList]});
 
-    await message.channel.send({embeds: [categoryList]});
+        const botFilter = (m: { author: { bot: any; id: string; }; content: string; }) => !m.author.bot && m.author.id === message.author.id
+            && !m.content.startsWith('!');
+        const responseCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
 
-    // 사용자는 !1, !2, !3, !4, !5, !6, !7, !8, !9, !10, !11 중 하나를 입력한다.
-    // !를 제외한 숫자 중, 1~11이 아닌 숫자를 입력하면 "잘못된 입력입니다. 다시 입력해주세요."를 출력한다.
-    const selectedNumber = parseInt(message.content.split('!')[1]);
-    const botFilter = (m: { author: { bot: any; id: string; }; content: string; }) => !m.author.bot && m.author.id === message.author.id
-        && !m.content.startsWith('!') && (selectedNumber >= 1 && selectedNumber <= 11);
-    const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
+        responseCollector.on('collect', async msg => {
+            const selectedNumber = parseInt(msg.content);
+            //만일 숫자가 아니거나 0~10 사이의 숫자가 아니라면
+            if (isNaN(selectedNumber) || selectedNumber < 0 || selectedNumber > 10){
+                await message.reply("숫자를 잘못 입력하셨습니다. 다시 입력해주세요.");
+                return;
+            }
+
+            const problem = await getProblemWithCategory(message.author.id, selectedNumber);
+            await message.channel.send({embeds: [problem.getEmbedMsg("개인 맞춤형 문제입니다.")]})
+        });
+
+        responseCollector.on('end', collected => {
+            if (collected.size === 0){
+                message.reply("입력 시간이 만료되었습니다.")
+            }
+        });
+    }catch (error){
+        logger.error(error);
+        await message.reply("알 수 없는 오류가 발생했습니다.")
+    }
 }
