@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv'
 
 dotenv.config()
 
-export class modelUtil{
+export class ModelUtil {
     static async getSingleProblem(userId: string, numberOfProblems: number){
         try {
             const response = await axios.post(`${process.env.BASE_URL}/baekjun/user_id` , {
@@ -59,7 +59,7 @@ export class modelUtil{
         return problem_arr;
     }
 
-    static async getProblemWithCategory(userId: number, categoryId: number){
+    static async getProblemWithCategory(userId: string, categoryId: number){
         let problem_arr = []
         try{
             const response = await axios.post(`${process.env.BASE_URL}/baekjun/user_id` , {
