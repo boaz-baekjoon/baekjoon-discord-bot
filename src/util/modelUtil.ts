@@ -70,8 +70,8 @@ export class ModelUtil {
                 {
                     timeout: 3000
                 });
-            if (Array.isArray(response.data['problems'])) {
-                problem_arr = response.data['problems'];
+            if (Array.isArray(response.data[userId])) {
+                problem_arr = response.data[userId];
             }
         }catch(error: any){
             logger.error(error.message)
