@@ -20,7 +20,7 @@ export async function getRecommendedProblem(user_id: string) {
     }
 }
 
-async function getRandomProblem() {
+export async function getRandomProblem() {
     for (let i = 0; i < 5; i++) {
         try {
             const randomId = Math.floor(Math.random() * (28415 - 1000)) + 1000;
