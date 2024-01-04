@@ -5,7 +5,7 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: manual
+  storageClassName: local-storage
   capacity:
     storage: 1Gi
   accessModes:
@@ -18,7 +18,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: baekjoon-log-claim
 spec:
-  storageClassName: manual
+  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:
@@ -64,29 +64,3 @@ spec:
         persistentVolumeClaim:
           claimName: baekjoon-log-claim
 ---
-apiVersion: autoscaling/v2beta2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: baekjoon-hpa
-  namespace: baekjoon
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: baekjoon-deployment
-  minReplicas: 1
-  maxReplicas: 3
-  metrics:
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 50
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 50
-
