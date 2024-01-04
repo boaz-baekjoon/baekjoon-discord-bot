@@ -23,13 +23,31 @@ export class modelUtil{
         return [];
     }
 
-static async getSimilarProbWithId(probId: number){
-        let problem_arr = []
+    static async getSimilarProbWithId(probId: number){
+            let problem_arr = []
+            try{
+                const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_id` , {
+                    timeout: 3000,
+                    params:{
+                        problem_id: probId,
+                    }
+                });
+                if (Array.isArray(response.data['problems'])) {
+                    problem_arr = response.data['problems'];
+                }
+            }catch(error: any){
+                logger.error(error.message)
+            }
+            return problem_arr;
+        }
+
+    static async getSimilarProbWithContext(probContext: string){
+        let problem_arr= []
         try{
-            const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_id` , {
+            const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_text` , {
                 timeout: 3000,
                 params:{
-                    problem_id: probId,
+                    problem_text: probContext,
                 }
             });
             if (Array.isArray(response.data['problems'])) {
@@ -41,15 +59,17 @@ static async getSimilarProbWithId(probId: number){
         return problem_arr;
     }
 
-    static async getSimilarProbWithContext(probContext: string){
-        let problem_arr= []
+    static async getProblemWithCategory(userId: number, categoryId: number){
+        let problem_arr = []
         try{
-            const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_text` , {
-                timeout: 3000,
-                params:{
-                    problem_text: probContext,
-                }
-            });
+            const response = await axios.post(`${process.env.BASE_URL}/baekjun/user_id` , {
+                    user_id_list: [userId],
+                    category: categoryId,
+                    problem_num: 1
+                },
+                {
+                    timeout: 3000
+                });
             if (Array.isArray(response.data['problems'])) {
                 problem_arr = response.data['problems'];
             }
