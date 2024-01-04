@@ -8,161 +8,77 @@ import {ClientSession} from "typeorm";
 export class MongoUtil{
     //map discordId and bojId, and save it to mongoDB
     static async addUser(userDiscordId: string, userBojId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
         try{
-            session = await mongoose.startSession();
-            session.startTransaction();
-
             const user = new User({
                 discord_id: userDiscordId,
                 boj_id: userBojId,
             });
-            await user.save({session: session});
+            await user.save();
             logger.info(`Adding user ${userDiscordId} with boj id ${userBojId}`);
-            await session.commitTransaction();
             return true;
         }catch (error: any){
-            // @ts-ignore
-            if(session){
-                await session.abortTransaction();
-            }
             logger.error(error.message);
             return false;
-        }finally {
-            // @ts-ignore
-            if (session){
-                await session.endSession();
-            }
         }
     }
 
     //delete user with discordId
     static async deleteUser(userDiscordId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
         try{
-            session = await mongoose.startSession();
-            session.startTransaction();
-
-            await User.deleteOne({discord_id: userDiscordId}, {session: session});
+            await User.deleteOne({discord_id: userDiscordId});
             logger.info(`Deleting user ${userDiscordId}`);
-            await session.commitTransaction();
             return true;
         }catch(error: any){
-            // @ts-ignore
-            if(session){
-                await session.abortTransaction();
-            }
             logger.error(error.message);
             return false;
-        }finally {
-            // @ts-ignore
-            if (session){
-                await session.endSession();
-            }
         }
     }
 
     //modify bojId of user with discordId
     static async modifyBojIdOfUser(userDiscordId: string, userBojId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
         try {
-            session = await mongoose.startSession();
-            session.startTransaction();
-
-            await User.updateOne({discord_id: userDiscordId}, {boj_id: userBojId}, {session: session});
+            await User.updateOne({discord_id: userDiscordId}, {boj_id: userBojId});
             logger.info(`Modifying boj id of user ${userDiscordId} to ${userBojId}`);
-            await session.commitTransaction();
             return true;
-        }catch(error: any){
-            // @ts-ignore
-            if(session){
-                await session.abortTransaction();
-            }
+        }catch(error: any) {
             logger.error(error.message);
             return false;
-        }finally {
-            // @ts-ignore
-            if (session){
-                await session.endSession();
-            }
         }
     }
 
     //add time at which user wants to get notification
     static async addTime(userDiscordId: string, userDailyTime: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
         try{
-            session = await mongoose.startSession();
-            session.startTransaction();
-
-            await User.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime}, {session: session});
+            await User.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime});
             logger.info(`Adding time ${userDailyTime} to user ${userDiscordId}`);
-            await session.commitTransaction();
             return true;
         }catch (error: any){
-            // @ts-ignore
-            if(session){
-                await session.abortTransaction();
-            }
             logger.error(error.message);
             return false;
-        }finally {
-            // @ts-ignore
-            if (session){
-                await session.endSession();
-            }
         }
     }
 
     //deactivate daily problem notification
     static async deleteTime(userDiscordId: string): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
         try {
-            session = await mongoose.startSession();
-            session.startTransaction();
-
-            await User.updateOne({discord_id: userDiscordId}, {daily_time: null}), {session: session};
+            await User.updateOne({discord_id: userDiscordId}, {daily_time: null});
             logger.info(`Deleting time of user ${userDiscordId}`);
-            await session.commitTransaction();
             return true;
         }catch(error: any){
-            // @ts-ignore
-            if(session){
-                await session.abortTransaction();
-            }
             logger.error(error.message);
             return false;
-        }finally {
-            // @ts-ignore
-            if (session){
-                await session.endSession();
-            }
         }
     }
 
     //modify time at which user wants to get notification, and will be executed for users who already activated daily notification
     static async modifyTime(userDiscordId: String, userDailyTime: String): Promise<boolean>{
-        let session: mongoose.mongo.ClientSession;
         try {
-            session = await mongoose.startSession();
-            session.startTransaction();
-
             await User.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime});
             logger.info(`Modifying time of user ${userDiscordId} to ${userDailyTime}`);
-            await session.commitTransaction();
             return true;
         }catch(error: any){
-            // @ts-ignore
-            if(session){
-                await session.abortTransaction();
-            }
             logger.error(error.message);
             return false;
-        }finally {
-            // @ts-ignore
-            if (session){
-                await session.endSession();
-            }
         }
     }
 
