@@ -31,7 +31,7 @@ export async function execute(message: Message){
             const selectedNumber = parseInt(msg.content);
             //만일 숫자가 아니거나 0~10 사이의 숫자가 아니라면
             if (isNaN(selectedNumber) || selectedNumber < 0 || selectedNumber > 10){
-                await message.reply("숫자를 잘못 입력하셨습니다. 다시 입력해주세요.");
+                await message.reply("숫자를 잘못 입력하셨습니다. 명령을 취소합니다.");
                 return;
             }
 
