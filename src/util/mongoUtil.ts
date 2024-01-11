@@ -1,15 +1,15 @@
 import * as mongoose from 'mongoose';
-import { User } from '../schema/user.js';
+import { Mongodb_use_schema } from '../model/mongodb_use_schema.js';
 import {logger} from "../logger.js";
-import {Problem} from "../schema/problem_schema.js";
-import {BojProblem} from "../schema/problem_class.js";
+import {Problem} from "../model/problem_schema.js";
+import {BojProblem} from "../model/problem_class.js";
 import {ClientSession} from "typeorm";
 
 export class MongoUtil{
     //map discordId and bojId, and save it to mongoDB
     static async addUser(userDiscordId: string, userBojId: string): Promise<boolean>{
         try{
-            const user = new User({
+            const user = new Mongodb_use_schema({
                 discord_id: userDiscordId,
                 boj_id: userBojId,
             });
@@ -25,7 +25,7 @@ export class MongoUtil{
     //delete user with discordId
     static async deleteUser(userDiscordId: string): Promise<boolean>{
         try{
-            await User.deleteOne({discord_id: userDiscordId});
+            await Mongodb_use_schema.deleteOne({discord_id: userDiscordId});
             logger.info(`Deleting user ${userDiscordId}`);
             return true;
         }catch(error: any){
@@ -37,7 +37,7 @@ export class MongoUtil{
     //modify bojId of user with discordId
     static async modifyBojIdOfUser(userDiscordId: string, userBojId: string): Promise<boolean>{
         try {
-            await User.updateOne({discord_id: userDiscordId}, {boj_id: userBojId});
+            await Mongodb_use_schema.updateOne({discord_id: userDiscordId}, {boj_id: userBojId});
             logger.info(`Modifying boj id of user ${userDiscordId} to ${userBojId}`);
             return true;
         }catch(error: any) {
@@ -49,7 +49,7 @@ export class MongoUtil{
     //add time at which user wants to get notification
     static async addTime(userDiscordId: string, userDailyTime: string): Promise<boolean>{
         try{
-            await User.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime});
+            await Mongodb_use_schema.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime});
             logger.info(`Adding time ${userDailyTime} to user ${userDiscordId}`);
             return true;
         }catch (error: any){
@@ -61,7 +61,7 @@ export class MongoUtil{
     //deactivate daily problem notification
     static async deleteTime(userDiscordId: string): Promise<boolean>{
         try {
-            await User.updateOne({discord_id: userDiscordId}, {daily_time: null});
+            await Mongodb_use_schema.updateOne({discord_id: userDiscordId}, {daily_time: null});
             logger.info(`Deleting time of user ${userDiscordId}`);
             return true;
         }catch(error: any){
@@ -73,7 +73,7 @@ export class MongoUtil{
     //modify time at which user wants to get notification, and will be executed for users who already activated daily notification
     static async modifyTime(userDiscordId: String, userDailyTime: String): Promise<boolean>{
         try {
-            await User.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime});
+            await Mongodb_use_schema.updateOne({discord_id: userDiscordId}, {daily_time: userDailyTime});
             logger.info(`Modifying time of user ${userDiscordId} to ${userDailyTime}`);
             return true;
         }catch(error: any){
@@ -85,7 +85,7 @@ export class MongoUtil{
     //find user with discordId, for checking if user already registered. BojId will be displayed if user already registered
     static async findUserWithDiscordId(userDiscordId: string): Promise<any>{
         try {
-            const user = await User.findOne({discord_id: userDiscordId});
+            const user = await Mongodb_use_schema.findOne({discord_id: userDiscordId});
             logger.info(`Finding user ${userDiscordId}`);
             if (user){
                 return user;
@@ -100,7 +100,7 @@ export class MongoUtil{
     //for sending daily problem notification at corresponding time
     static async findUserWithUserDailyTime(userDailyTime: string): Promise<any>{
         try {
-            const users = await User.find({daily_time: userDailyTime});
+            const users = await Mongodb_use_schema.find({daily_time: userDailyTime});
             logger.info(`Finding users with time ${userDailyTime}`);
             if (users){
                 return users;

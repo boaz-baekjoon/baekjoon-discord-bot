@@ -14,4 +14,4 @@ const UserSchema = new mongoose.Schema({
     daily_time: {type: String, required: false}
 });
 
-export const User = mongoose.model<IUser>('User', UserSchema, 'boj_user');
+export const Mongodb_use_schema = mongoose.model<IUser>('Mongodb_use_schema', UserSchema, 'boj_user');

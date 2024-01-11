@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {BojProblem, getProblemErrorMsg} from "../schema/problem_class.js";
+import {BojProblem, getProblemErrorMsg} from "../model/problem_class.js";
 import {logger} from '../logger.js'
 import {ModelUtil} from "../util/modelUtil.js";
 import {MongoUtil} from "../util/mongoUtil.js";
