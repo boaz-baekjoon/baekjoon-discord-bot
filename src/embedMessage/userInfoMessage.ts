@@ -9,10 +9,8 @@ export function getUserInfo(userClass: SolvedAcUser): EmbedBuilder{
         .setTitle(userClass.username)
         .setDescription(userClass.bio)
         .addFields(
-            {name: '\u200B', value: '\u200B'},
             {name: '티어', value: `${userClass.getTierName()}`, inline: true},
             {name: '푼 문제 수', value: `${userClass.solvedCount}`, inline: true},
-            {name: '\u200B', value: '\u200B'},
             {name: 'Rating', value: `${userClass.rating}`, inline: true},
         )
         .setTimestamp()

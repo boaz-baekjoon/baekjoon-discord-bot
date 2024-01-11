@@ -26,10 +26,10 @@ export class SolvedAcUser{
 
     static returnUserWithResponse(response: any): SolvedAcUser{
         return new SolvedAcUser(response.data['handle'],
-            response.data['bio'],
-            response.data['avatar'],
-            response.data['solved_count'],
-            response.data['level'],
+            (response.data['bio'] === '') ? '자기소개가 없습니다.' : response.data['bio'],
+            (response.data['profileImageUrl'] === null) ? 'https://static.solved.ac/misc/64x64/default_profile.png' : response.data['profileImageUrl'],
+            response.data['solvedCount'],
+            response.data['tier'],
             response.data['rating']);
     }
 

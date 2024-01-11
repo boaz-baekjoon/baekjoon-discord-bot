@@ -1,6 +1,9 @@
 import {logger} from "../logger.js";
 import {MongoUtil} from "../util/mongoUtil.js";
 import {Message} from "discord.js";
+import {getUserInfo} from "../embedMessage/userInfoMessage.js";
+import {searchUserInfoWithSolvedAc} from "../bot/getUserInfo.js";
+
 
 async function registerId(message: Message, isUserAlreadyRegistered: boolean) {
     await message.reply("등록하실 백준 아이디를 입력해주세요.");
@@ -8,6 +11,13 @@ async function registerId(message: Message, isUserAlreadyRegistered: boolean) {
     const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
 
     idCollector.on('collect', async msg => {
+        const realUser = await searchUserInfoWithSolvedAc(msg.content);
+        if (realUser.username === 'error'){
+            await message.reply("백준에 존재하지 않는 계정입니다. 명령을 취소합니다.")
+            return;
+        }
+        await message.channel.send({embeds: [getUserInfo(realUser)]})
+
         let response: boolean;
         if(isUserAlreadyRegistered){
             response = await MongoUtil.modifyBojIdOfUser(message.author.id, msg.content);
@@ -35,6 +45,8 @@ export async function execute (message: Message) {
         const user = await MongoUtil.findUserWithDiscordId(message.author.id);
 
         if (user) {
+            const realUser = await searchUserInfoWithSolvedAc(user['boj_id']);
+            await message.channel.send({embeds: [getUserInfo(realUser)]})
             await message.reply(`이미 ${user['boj_id']}로 등록이 된 상태입니다. 변경하시려면 '변경', 삭제하시려면 '삭제'를 입력해주세요. 명령어를 취소하려면 '취소'를 입력해주세요.`)
 
             const botFilter = (m: {

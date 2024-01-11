@@ -11,7 +11,7 @@ export async function searchUserInfoWithSolvedAc(userId: string): Promise<Solved
             }
         });
         if (response.data['handle'] === userId) {
-            return SolvedAcUser.returnUserWithResponse(response.data);
+            return SolvedAcUser.returnUserWithResponse(response);
         }
     } catch (error: any) {
         logger.error(error.message)

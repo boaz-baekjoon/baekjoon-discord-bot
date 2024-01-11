@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest --testPathPattern=\"^(?!.*aws_rds\\.test\\.ts).*\" --passWithNoTests",
     "start": "export NODE_ENV=production && node dist/index.js",
-    "dev_start": "export NODE_ENV=development && ts-node src/index.ts",
+    "dev_start": "export NODE_ENV=development && tsc && node dist/index.js",
     "build": "tsc"
   },
   "keywords": [],
