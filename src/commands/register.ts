@@ -1,6 +1,9 @@
 import {logger} from "../logger.js";
 import {MongoUtil} from "../util/mongoUtil.js";
 import {Message} from "discord.js";
+import {getUserInfo} from "../embedMessage/userInfoMessage.js";
+import {searchUserInfoWithSolvedAc} from "../bot/getUserInfo.js";
+
 
 async function registerId(message: Message, isUserAlreadyRegistered: boolean) {
     await message.reply("등록하실 백준 아이디를 입력해주세요.");
@@ -8,18 +11,26 @@ async function registerId(message: Message, isUserAlreadyRegistered: boolean) {
     const idCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
 
     idCollector.on('collect', async msg => {
-        let response: boolean;
-        if(isUserAlreadyRegistered){
-            response = await MongoUtil.modifyBojIdOfUser(message.author.id, msg.content);
+        const realUser = await searchUserInfoWithSolvedAc(msg.content);
+        if (realUser.username === 'error'){
+            await message.reply("백준에 존재하지 않는 계정입니다. 명령을 취소합니다.")
+            return;
         }else{
-            response = await MongoUtil.addUser(message.author.id, msg.content);
-        }
+            await message.channel.send({embeds: [getUserInfo(realUser)]})
 
-        if (response){
-            await message.reply(isUserAlreadyRegistered ? "정상적으로 변경되었습니다." : "정상적으로 등록되었습니다.")
-            logger.info(`${message.author.id} / ${msg.content} 가입 완료`)
-        }else{
-            await message.reply("알 수 없는 오류가 발생했습니다.")
+            let response: boolean;
+            if(isUserAlreadyRegistered){
+                response = await MongoUtil.modifyBojIdOfUser(message.author.id, msg.content);
+            }else{
+                response = await MongoUtil.addUser(message.author.id, msg.content);
+            }
+
+            if (response){
+                await message.reply(isUserAlreadyRegistered ? "정상적으로 변경되었습니다." : "정상적으로 등록되었습니다.")
+                logger.info(`${message.author.id} / ${msg.content} 가입 완료`)
+            }else{
+                await message.reply("알 수 없는 오류가 발생했습니다.")
+            }
         }
     })
 
@@ -35,8 +46,14 @@ export async function execute (message: Message) {
         const user = await MongoUtil.findUserWithDiscordId(message.author.id);
 
         if (user) {
-            await message.reply(`이미 ${user['boj_id']}로 등록이 된 상태입니다. 변경하시려면 '변경', 삭제하시려면 '삭제'를 입력해주세요. 명령어를 취소하려면 '취소'를 입력해주세요.`)
+            const realUser = await searchUserInfoWithSolvedAc(user['boj_id']);
 
+            if(realUser.username === 'error'){
+                await message.reply("백준에 존재하지 않는 계정이 등록된 상태입니다. '변경' 또는 '삭제'를 입력하여 백준 아이디를 변경해주세요.")
+            }else{
+                await message.channel.send({embeds: [getUserInfo(realUser)]})
+                await message.reply(`이미 ${user['boj_id']}로 등록이 된 상태입니다. 변경하시려면 '변경', 삭제하시려면 '삭제'를 입력해주세요. 명령어를 취소하려면 '취소'를 입력해주세요.`)
+            }
             const botFilter = (m: {
                 author: { bot: any; id: string; };
                 content: string;
