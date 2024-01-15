@@ -63,7 +63,7 @@ export class ModelUtil {
         let problem_arr = []
         try{
             const response = await axios.post(`${process.env.BASE_URL}/baekjun/category` , {
-                    user_id_list: [userId],
+                    user_id: userId,
                     category: categoryId,
                     problem_num: 1
                 },
