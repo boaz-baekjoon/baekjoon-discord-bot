@@ -2,7 +2,7 @@ import {EmbedBuilder} from "discord.js";
 
 export const categoryList = new EmbedBuilder()
     .setColor(0x3498DB)
-    .setAuthor({name: 'BOJ Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
+    .setAuthor({name: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
     .setThumbnail('https://avatars.githubusercontent.com/u/139442196?s=200&v=4')
     .setTitle("알고리즘 분류 목록입니다.")
     .setDescription("원하시는 문제 유형을 숫자로 입력해주세요! (ex. DP의 경우 2)")

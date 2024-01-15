@@ -35,8 +35,9 @@ export class BojProblem{
         try{
             return new EmbedBuilder()
                 .setColor(0x3498DB)
-                .setAuthor({name: 'BOJ Bot'})
+                .setAuthor({name: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
                 .setTitle(msgTitle)
+                .setThumbnail('https://avatars.githubusercontent.com/u/139442196?s=200&v=4')
                 .addFields(
                     {name: '문제 번호:', value: `${this.problemId}`, inline: false},
                     {name: '문제:', value: `${this.title}`, inline: false},
@@ -48,7 +49,8 @@ export class BojProblem{
                     },
                     {name: '링크', value: `https://www.acmicpc.net/problem/${this.problemId}`, inline: false}
                 )
-                .setTimestamp();
+                .setTimestamp()
+                .setFooter({text: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
         }catch (error){
             logger.error(error)
             return getProblemErrorMsg();
