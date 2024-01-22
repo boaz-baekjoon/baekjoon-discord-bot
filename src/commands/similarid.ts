@@ -1,5 +1,47 @@
 import {Message} from "discord.js";
+import {ModelUtil} from "../util/modelUtil.js";
+import {logger} from "../logger.js";
+import {MongoUtil} from "../util/mongoUtil.js";
+
+async function getSimilarProblem(problem_id: number) {
+    try{
+        const problem_arr = await ModelUtil.getSimilarProbWithId(problem_id);
+        if (problem_arr.length === 0){
+            return null;
+        }
+        return problem_arr[0];
+    }catch(error){
+        logger.error(error);
+        return null;
+    }
+}
 
 export async function execute(message: Message) {
-    message.channel.send("유사 문제 내용 추천 - 구현 중입니다. 조금만 기다려주세요!")
+    await message.reply("유사한 문제를 찾고 싶은 문제의 번호를 입력해주세요.")
+    const responseFilter = (m: { author: { bot: any; id: string; }; content: string; }) => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!')
+    const responseCollector = message.channel.createMessageCollector({
+        filter: responseFilter,
+        max: 1,
+        time: 20000
+    });
+    responseCollector.on('collect', async msg => {
+        try{
+            const similarProblemId = await getSimilarProblem(parseInt(msg.content));
+            if (similarProblemId === null){
+                await message.reply("입력하신 문제 번호에 해당하는 문제가 없습니다. 명령을 취소합니다.")
+                return;
+            }
+            const problem = await MongoUtil.findProblemWithProblemId(similarProblemId);
+            await message.channel.send({embeds: [problem.getEmbedMsg("유사 문제입니다.")]});
+        }catch (error){
+            logger.error(error)
+            await message.reply("알 수 없는 오류가 발생했습니다.")
+        }
+    })
+    responseCollector.on('end', collected => {
+        if (collected.size === 0){
+            message.reply("입력 시간이 만료되었습니다.")
+        }
+    })
+
 }

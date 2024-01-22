@@ -26,38 +26,24 @@ export class ModelUtil {
     static async getSimilarProbWithId(probId: number){
             let problem_arr = []
             try{
-                const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_id` , {
-                    timeout: 3000,
-                    params:{
+                const response = await axios.post(`${process.env.BASE_URL}/baekjun/similar_id` , {
                         problem_id: probId,
-                    }
+                        problem_num: 1
+                    },
+                    {
+                        timeout: 3000
                 });
-                if (Array.isArray(response.data['problems'])) {
-                    problem_arr = response.data['problems'];
+                logger.verbose(response.data[`${probId}`]);
+                if (response.data[`${probId}`] !== undefined && Array.isArray(response.data[`${probId}`])) {
+                    problem_arr = response.data[`${probId}`];
+                }else{
+                    return [];
                 }
             }catch(error: any){
                 logger.error(error.message)
             }
             return problem_arr;
         }
-
-    static async getSimilarProbWithContext(probContext: string){
-        let problem_arr= []
-        try{
-            const response = await axios.get(`${process.env.BASE_URL}/baekjun/similar_text` , {
-                timeout: 3000,
-                params:{
-                    problem_text: probContext,
-                }
-            });
-            if (Array.isArray(response.data['problems'])) {
-                problem_arr = response.data['problems'];
-            }
-        }catch(error: any){
-            logger.error(error.message)
-        }
-        return problem_arr;
-    }
 
     static async getProblemWithCategory(userId: string, categoryId: number){
         let problem_arr = []
