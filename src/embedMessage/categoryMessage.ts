@@ -20,7 +20,8 @@ export const categoryList = new EmbedBuilder()
         { name: '7: 최적화 문제', value: 'greedy, divide_and_conquer', inline: true },
         { name: '8: 기하학적 알고리즘', value: 'geometry, parsing, sweeping', inline: true },
         { name: '\u200B', value: '\u200B' },
-        { name: '9: 고급 알고리즘', value: 'green, utf8, bayes, hackenbush', inline: false },
+        { name: '9: 고급 알고리즘', value: 'green, utf8, bayes, hackenbush', inline: true },
+        { name: '10: 명령어 취소', value: '!category 명령을 취소합니다.', inline: true },
         { name: '\u200B', value: '\u200B' },
 )
     .setTimestamp()

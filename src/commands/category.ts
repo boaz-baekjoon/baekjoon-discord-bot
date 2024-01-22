@@ -34,6 +34,10 @@ export async function execute(message: Message){
                 await message.reply("숫자를 잘못 입력하셨습니다. 명령을 취소합니다.");
                 return;
             }
+            if(selectedNumber === 10){
+                await message.reply("명령을 취소하셨습니다.");
+                return;
+            }
 
             const problem = await getProblemWithCategory(message.author.id, selectedNumber);
             await message.channel.send({embeds: [problem.getEmbedMsg("개인 맞춤형 문제입니다.")]})
