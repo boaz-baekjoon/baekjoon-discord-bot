@@ -3,6 +3,7 @@ import { sendDailyProblem } from './bot/cron.js'
 import * as cron from 'node-cron';
 import { logger } from './logger.js'
 import {initializeBot} from "./bot/initialize-bot.js";
+import {embedWelcome} from "./embedMessage/guideMessage.js";
 
 declare module "discord.js" {
     export interface Client {
@@ -25,6 +26,18 @@ initializeBot(client).then(() => {
 
 
 const userCommandStatus = {}
+
+client.on("guildCreate", async(guild) => {
+    let channel: any = guild.channels.cache.find(channel => channel.type === 0);
+    logger.info(`${guild.ownerId} Uses Baekjoon bot newly`)
+    if (!channel){
+        logger.warn(`${guild.ownerId} / No chat channel found`)
+        return;
+    }
+    //Send welcome message
+    channel.send({embeds: [embedWelcome]});
+})
+
 client.on('messageCreate', message => {
     try{
         //Ignore if message is from bot or not from guild
