@@ -49,10 +49,10 @@ spec:
             name: baekjoon-secret
         resources:
           requests:
-            memory: "256Mi"
-            cpu: 0.1
+            memory: "1G"
+            cpu: 0.3
           limits:
-            memory: "2G"
+            memory: "4G"
             cpu: 1
         ports:
         - containerPort: 4732
