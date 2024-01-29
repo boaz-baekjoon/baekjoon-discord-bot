@@ -48,20 +48,22 @@ client.on('messageCreate', message => {
         // @ts-ignore
         const command: string = message.content.slice(1).split(/ +/).shift().toLowerCase();
 
+        if (command === process.env.ADMIN_COMMAND && message.author.id.toString() === process.env.ADMIN_ID){
+            sendAdminMessage(message, client).then(r =>
+                logger.verbose(r)
+            ).catch(error =>{
+                logger.error(error)
+            });
+            return;
+        }
+
         //Ignore if command is not in commands
         if (!client.commands.has(command)) {
             message.reply("알 수 없는 명령어입니다. 명령어를 확인하시려면 !help를 입력해주세요.")
             return;
         }
 
-        if (command === process.env.ADMIN_COMMAND && message.author.id.toString() === process.env.ADMIN_ID){
-            sendAdminMessage(message, client).then(r =>
-            logger.verbose(r)
-            ).catch(error =>{
-                logger.error(error)
-            });
-            return;
-        }
+
         client.commands.get(command).execute(message);
     }catch (error) {
         console.error(error);
