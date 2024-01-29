@@ -49,8 +49,7 @@ export class BojProblem{
                     },
                     {name: '링크', value: `https://www.acmicpc.net/problem/${this.problemId}`, inline: false}
                 )
-                .setTimestamp()
-                .setFooter({text: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
+                .setFooter({text: 'Baekjoon Bot. 버그가 발생한 경우 !report로 제보해주세요.', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
         }catch (error){
             logger.error(error)
             return getProblemErrorMsg();

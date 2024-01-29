@@ -3,7 +3,7 @@ import {Message} from "discord.js";
 
 export async function execute(message: Message) {
     try{
-        message.channel.send("버그나 개선사항들을 자유롭게 입력해주세요. 모든 의견은 익명으로 개발자에게 전달됩니다.")
+        message.channel.send("버그나 개선사항들을 자유롭게 입력해주세요. 모든 의견은 익명으로 개발자에게 전달됩니다.\n명령을 취소하시려면 '취소'를 입력해주세요.")
         const botFilter = (m: { author: { bot: any; id: string; }; content: string; }) => !m.author.bot && m.author.id === message.author.id && !m.content.startsWith('!');
         const responseCollector = message.channel.createMessageCollector({filter: botFilter, max: 1, time: 20000});
 
