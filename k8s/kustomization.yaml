@@ -5,4 +5,4 @@ resources:
 images:
 - name: synoti21/baekjoon-bot
   newName: synoti21/baekjoon-bot
-  newTag: 8a7051a8
+  newTag: 7d39094b
