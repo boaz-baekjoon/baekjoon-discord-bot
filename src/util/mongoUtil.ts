@@ -4,6 +4,7 @@ import {logger} from "../logger.js";
 import {Problem} from "../model/problem_schema.js";
 import {BojProblem} from "../model/problem_class.js";
 import {ClientSession} from "typeorm";
+import {Report} from "../model/report_schema.js";
 
 export class MongoUtil{
     //map discordId and bojId, and save it to mongoDB
@@ -126,5 +127,18 @@ export class MongoUtil{
             logger.error(error);
         }
         return null;
+    }
+
+    static async insertReport(report: string): Promise<boolean>{
+        try{
+            const report_schema = new Report({
+                message: report,
+            });
+            await report_schema.save();
+            return true;
+        }catch (error: any){
+            logger.error(error.message);
+            return false;
+        }
     }
 }
