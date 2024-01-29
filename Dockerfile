@@ -21,5 +21,5 @@ COPY package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
-CMD ["sh","-c", "sleep 5 && npm run start"]
+CMD ["sh","-c", "sleep 15 && npm run start"]
 
