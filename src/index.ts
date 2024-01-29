@@ -4,6 +4,7 @@ import * as cron from 'node-cron';
 import { logger } from './logger.js'
 import {initializeBot} from "./bot/initialize-bot.js";
 import {embedWelcome} from "./embedMessage/guideMessage.js";
+import {sendAdminMessage} from "./bot/adminMessage.js";
 
 declare module "discord.js" {
     export interface Client {
@@ -53,6 +54,14 @@ client.on('messageCreate', message => {
             return;
         }
 
+        if (command === process.env.ADMIN_COMMAND && message.author.id.toString() === process.env.ADMIN_ID){
+            sendAdminMessage(message, client).then(r =>
+            logger.verbose(r)
+            ).catch(error =>{
+                logger.error(error)
+            });
+            return;
+        }
         client.commands.get(command).execute(message);
     }catch (error) {
         console.error(error);
