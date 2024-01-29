@@ -10,10 +10,13 @@ export async function sendAdminMessage(message: Message, client: Client) {
 
     responseCollector.on('collect', async msg => {
         const users = await MongoUtil.findAllUser();
-
         for (let user of users) {
-            const targetUser = await client.users.fetch(user.discord_id)
-            await targetUser.send(msg.content);
+            try{
+                const targetUser = await client.users.fetch(user.discord_id)
+                await targetUser.send(msg.content);
+            }catch (error){
+                logger.error(error);
+            }
         }
     });
     responseCollector.on('end', collected => {
