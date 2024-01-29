@@ -57,7 +57,7 @@ spec:
         ports:
         - containerPort: 4732
         volumeMounts:
-        - name: baekjoon-log
+        - name: baekjoon-log-volume
           mountPath: /app/logs
       volumes:
       - name: baekjoon-log

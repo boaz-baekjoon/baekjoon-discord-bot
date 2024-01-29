@@ -115,7 +115,7 @@ export class MongoUtil{
 
     static async findAllUser(): Promise<any>{
         try{
-            const users = await Mongodb_user_schema.find();
+            const users = await Mongodb_user_schema.find({});
             logger.info(`Finding all users`);
             if (users){
                 return users;
