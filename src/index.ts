@@ -1,4 +1,4 @@
-import {Client, Collection, GatewayIntentBits} from 'discord.js';
+import {Client, Collection, GatewayIntentBits, Interaction} from 'discord.js';
 import { sendDailyProblem } from './bot/cron.js'
 import * as cron from 'node-cron';
 import { logger } from './logger.js'
@@ -39,37 +39,20 @@ client.on("guildCreate", async(guild) => {
     channel.send({embeds: [embedWelcome]});
 })
 
-client.on('messageCreate', message => {
+client.on('interactionCreate', async (interaction: Interaction) => {
     try{
-        //Ignore if message is from bot or not from guild
-        if (message.author.bot || !message.guild || !message.content.startsWith('!')) return;
+        if (!interaction.isChatInputCommand()) return;
+        logger.verbose(`Command: ${interaction.commandName} / User: ${interaction.user.id}`)
 
-        //Slice the command and arguments
-        // @ts-ignore
-        const command: string = message.content.slice(1).split(/ +/).shift().toLowerCase();
+        const command = interaction.client.commands.get(interaction.commandName);
 
-        if (command === process.env.ADMIN_COMMAND && message.author.id.toString() === process.env.ADMIN_ID){
-            sendAdminMessage(message, client).then(r =>
-                logger.verbose(r)
-            ).catch(error =>{
-                logger.error(error)
-            });
-            return;
-        }
+        if (!command) return;
 
-        //Ignore if command is not in commands
-        if (!client.commands.has(command)) {
-            message.reply("알 수 없는 명령어입니다. 명령어를 확인하시려면 !help를 입력해주세요.")
-            return;
-        }
-
-
-        client.commands.get(command).execute(message);
-    }catch (error) {
+        await command.default.execute(interaction);
+    }catch (error){
         console.error(error);
-        message.reply('알 수 없는 오류가 발생했습니다.');
     }
-});
+})
 
 cron.schedule('* * * * *', function(){
     logger.verbose("Running cron job")

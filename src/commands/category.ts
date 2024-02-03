@@ -1,4 +1,4 @@
-import {Message} from "discord.js";
+import {ChatInputCommandInteraction, Message, SlashCommandBuilder, TextChannel} from "discord.js";
 import {categoryList} from "../embedMessage/categoryMessage.js";
 import {ModelUtil} from "../util/modelUtil.js";
 import {MongoUtil} from "../util/mongoUtil.js";
@@ -19,37 +19,25 @@ async function getProblemWithCategory(user_id: string, category: number) {
     }
 }
 
-export async function execute(message: Message){
-    try{
-        await message.channel.send({embeds: [categoryList]});
-
-        const botFilter = (m: { author: { bot: any; id: string; }; content: string; }) => !m.author.bot && m.author.id === message.author.id
-            && !m.content.startsWith('!');
-        const responseCollector = message.channel.createMessageCollector({filter: botFilter,max:1, time: 20000});
-
-        responseCollector.on('collect', async msg => {
-            const selectedNumber = parseInt(msg.content);
-            //만일 숫자가 아니거나 0~10 사이의 숫자가 아니라면
-            if (isNaN(selectedNumber) || selectedNumber < 0 || selectedNumber > 10){
-                await message.reply("숫자를 잘못 입력하셨습니다. 명령을 취소합니다.");
+export default{
+    data: new SlashCommandBuilder()
+        .setName('category')
+        .setDescription('카테고리별 문제를 받습니다.')
+        .addStringOption(option => option.setName('category').setDescription('카테고리 번호를 입력해주세요.').setRequired(true)),
+    async execute(interaction: ChatInputCommandInteraction){
+        try{
+            const number = interaction.options.getString('category');
+            if (number === null || parseInt(number) > 10 || parseInt(number) < 1){
+                await interaction.reply({embeds: [categoryList]});
+                await interaction.followUp("정확한 카테고리 번호를 입력해주세요.")
                 return;
             }
-            if(selectedNumber === 10){
-                await message.reply("명령을 취소하셨습니다.");
-                return;
-            }
-
-            const problem = await getProblemWithCategory(message.author.id, selectedNumber);
-            await message.channel.send({embeds: [problem.getEmbedMsg("개인 맞춤형 문제입니다.")]})
-        });
-
-        responseCollector.on('end', collected => {
-            if (collected.size === 0){
-                message.reply("입력 시간이 만료되었습니다.")
-            }
-        });
-    }catch (error){
-        logger.error(error);
-        await message.reply("알 수 없는 오류가 발생했습니다.")
+            const problem = await getProblemWithCategory(interaction.user.id, parseInt(number));
+            await (interaction.channel as TextChannel).send({embeds: [problem.getEmbedMsg("개인 맞춤형 문제입니다.")]})
+            await interaction.reply("카테고리별 문제를 전송했습니다.")
+        }catch (error){
+            logger.error(error);
+            await interaction.reply("알 수 없는 오류가 발생했습니다.")
+        }
     }
 }
