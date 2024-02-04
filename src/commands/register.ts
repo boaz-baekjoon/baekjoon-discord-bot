@@ -23,8 +23,7 @@ export default {
                     return;
                 } else {
                     await interaction.reply({embeds: [getUserInfo(realUser)]})
-                    await interaction.reply(`이미 ${user['boj_id']}로 등록이 된 상태입니다. \n
-                    변경하시려면 /quit을 통해 아이디 제거 후 /register를 통해 다시 등록해주세요.`)
+                    await interaction.followUp(`이미 ${user['boj_id']}로 등록이 된 상태입니다. \n변경하시려면 /quit을 통해 아이디 제거 후 /register를 통해 다시 등록해주세요.`)
                     return;
                 }
             }
@@ -39,7 +38,7 @@ export default {
             await interaction.reply({embeds: [getUserInfo(realUser)]})
             const response = await MongoUtil.addUser(interaction.user.id, boj_id!);
             if (response) {
-                await interaction.reply("정상적으로 등록되었습니다.")
+                await interaction.followUp("정상적으로 등록되었습니다.")
                 logger.info(`${interaction.user.id} / ${boj_id} 가입 완료`)
             }
             return;

@@ -5,11 +5,12 @@ import {MongoUtil} from "../util/mongoUtil.js";
 import {logger} from "../logger.js";
 import {getRandomProblem} from "./prob.js";
 
-async function getProblemWithCategory(user_id: string, category: number) {
+async function getProblemWithCategory(interaction: ChatInputCommandInteraction, category: number) {
     try{
-        const problem_arr = await ModelUtil.getProblemWithCategory(user_id, category);
+        const problem_arr = await ModelUtil.getProblemWithCategory(interaction.user.id, category);
         if (problem_arr.length === 0){
-            logger.warn(`${user_id}/ 모델 서버 오류로 인한 랜덤 문제 반환`)
+            await interaction.reply("모델 서버의 오류로 인해 랜덤 문제를 반환합니다.")
+            logger.warn(`${interaction.user.id}/ 모델 서버 오류로 인한 랜덤 문제 반환`)
             return await getRandomProblem()
         }
         return await MongoUtil.findProblemWithProblemId(problem_arr[0]);
@@ -27,12 +28,12 @@ export default{
     async execute(interaction: ChatInputCommandInteraction){
         try{
             const number = interaction.options.getString('category');
-            if (number === null || parseInt(number) === null || parseInt(number) > 10 || parseInt(number) < 1){
+            if (number === null || parseInt(number) === null || parseInt(number) > 9 || parseInt(number) < 0){
                 await interaction.reply({embeds: [categoryList]});
                 await interaction.followUp("정확한 카테고리 번호를 입력해주세요.")
                 return;
             }
-            const problem = await getProblemWithCategory(interaction.user.id, parseInt(number));
+            const problem = await getProblemWithCategory(interaction, parseInt(number));
             await (interaction.channel as TextChannel).send({embeds: [problem.getEmbedMsg("개인 맞춤형 문제입니다.")]})
             await interaction.reply("카테고리별 문제를 전송했습니다.")
         }catch (error){

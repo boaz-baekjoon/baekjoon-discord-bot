@@ -18,7 +18,7 @@ export const embedWelcome = new EmbedBuilder()
         { name: '/quit', value: '백준 ID를 제거합니다.', inline: false },
         { name: '/deactivate', value: '일일 문제 알림 수신을 비활성화 합니다.', inline: false },
         { name: '\u200B', value: '\u200B' },
-        { name: '업데이트 목록은 다음 링크에서 확인해주세요.', value: 'https://github.com/boaz-baekjoon/baekjoon-discord-bot/releases', inline: false },
+        { name: '업데이트 로그는 다음 링크에서 확인해주세요.', value: 'https://github.com/boaz-baekjoon/baekjoon-discord-bot/releases', inline: false },
     )
     .setTimestamp()
     .setFooter({text: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
