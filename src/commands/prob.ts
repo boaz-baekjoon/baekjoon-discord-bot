@@ -37,21 +37,6 @@ export async function getRandomProblem() {
     return getProblemErrorMsg();
 }
 
-export async function execute(message: Message) {
-    try{
-        const user = await MongoUtil.findUserWithDiscordId(message.author.id);
-        if (!user) { //없다면
-            await message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
-            return;
-        }
-        const randProblem = await getRecommendedProblem(user['boj_id']);
-        message.channel.send({embeds: [randProblem.getEmbedMsg("개인 맞춤형 문제입니다.")]});
-    }catch (error){
-        logger.error(error)
-        await message.reply("알 수 없는 오류가 발생했습니다.")
-    }
-}
-
 export default {
     data: new SlashCommandBuilder()
     .setName('prob')

@@ -1,10 +1,6 @@
 import {embedWelcome} from '../embedMessage/guideMessage.js';
 import {ChatInputCommandInteraction, Message, SlashCommandBuilder} from "discord.js";
 
-export async function execute(message: Message){
-    message.channel.send({embeds: [embedWelcome]})
-}
-
 export default {
     data: new SlashCommandBuilder()
         .setName('help')
