@@ -15,7 +15,7 @@ export const embedWelcome = new EmbedBuilder()
         { name: '/report', value: '버그나 개선사항이 있으면 자유롭게 말씀해주세요!', inline: false },
         { name: '/help', value: '백준 봇 명령어를 알려드립니다.', inline: false },
         { name: '/categorylist', value: '/category 사용 전, 알고리즘 분류 목록표를 보여드립니다.', inline: false },
-        { name: '/quit', value: '백준 ID를 제거합니다.', inline: false },
+        { name: '/quit', value: '백준 ID를 제거합니다. 봇을 제거할 시 정보 또한 동일하게 제거됩니다.', inline: false },
         { name: '/deactivate', value: '일일 문제 알림 수신을 비활성화 합니다.', inline: false },
         { name: '\u200B', value: '\u200B' },
         { name: '업데이트 로그는 다음 링크에서 확인해주세요.', value: 'https://github.com/boaz-baekjoon/baekjoon-discord-bot/releases', inline: false },
