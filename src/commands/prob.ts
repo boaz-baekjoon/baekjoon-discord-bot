@@ -3,7 +3,7 @@ import {BojProblem, getProblemErrorMsg} from "../model/problem_class.js";
 import {logger} from '../logger.js'
 import {ModelUtil} from "../util/modelUtil.js";
 import {MongoUtil} from "../util/mongoUtil.js";
-import {Message} from "discord.js";
+import {ChatInputCommandInteraction, Message, SlashCommandBuilder} from "discord.js";
 
 export async function getRecommendedProblem(user_id: string) {
     try{
@@ -37,17 +37,23 @@ export async function getRandomProblem() {
     return getProblemErrorMsg();
 }
 
-export async function execute(message: Message) {
-    try{
-        const user = await MongoUtil.findUserWithDiscordId(message.author.id);
-        if (!user) { //없다면
-            await message.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
-            return;
+export default {
+    data: new SlashCommandBuilder()
+    .setName('prob')
+    .setDescription('즉시 문제를 추천받습니다.'),
+
+    async execute(interaction: ChatInputCommandInteraction){
+        try{
+            const user = await MongoUtil.findUserWithDiscordId(interaction.user.id);
+            if (!user) { //없다면
+                await interaction.reply("백준 아이디를 등록하지 않았습니다. /register을 통해 아이디를 등록해주세요");
+                return;
+            }
+            const randProblem = await getRecommendedProblem(user['boj_id']);
+            await interaction.reply({embeds: [randProblem.getEmbedMsg("개인 맞춤형 문제입니다.")]});
+        }catch (error){
+            logger.error(error)
+            await interaction.reply("알 수 없는 오류가 발생했습니다.")
         }
-        const randProblem = await getRecommendedProblem(user['boj_id']);
-        message.channel.send({embeds: [randProblem.getEmbedMsg("개인 맞춤형 문제입니다.")]});
-    }catch (error){
-        logger.error(error)
-        await message.reply("알 수 없는 오류가 발생했습니다.")
     }
 }
