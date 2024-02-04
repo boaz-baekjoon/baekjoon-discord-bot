@@ -23,7 +23,7 @@ export default{
     data: new SlashCommandBuilder()
         .setName('category')
         .setDescription('카테고리별 문제를 받습니다.')
-        .addStringOption(option => option.setName('category').setDescription('카테고리 번호를 입력해주세요.').setRequired(true)),
+        .addStringOption(option => option.setName('category').setDescription('카테고리 번호를 입력해주세요. 번호 목록은 /categorylist를 통해 확인해주세요.').setRequired(true)),
     async execute(interaction: ChatInputCommandInteraction){
         try{
             const number = interaction.options.getString('category');

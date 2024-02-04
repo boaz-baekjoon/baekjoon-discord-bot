@@ -4,7 +4,7 @@ export const embedWelcome = new EmbedBuilder()
     .setAuthor({name: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
     .setThumbnail('https://avatars.githubusercontent.com/u/139442196?s=200&v=4')
     .setTitle("안녕하세요 백준 봇입니다! :)")
-    .setDescription("원하시는 서비스를 !{명령어} 형식으로 입력해주세요!")
+    .setDescription("원하시는 서비스를 /{명령어} 형식으로 입력해주세요!")
     .addFields(
         { name: '\u200B', value: '\u200B' },
         { name: '/register', value: '백준 봇 서비스를 사용하기 위해 백준 아이디를 등록합니다.', inline: false },
@@ -17,8 +17,8 @@ export const embedWelcome = new EmbedBuilder()
         { name: '/categorylist', value: '/category 사용 전, 알고리즘 분류 목록표를 보여드립니다.', inline: false },
         { name: '/quit', value: '백준 ID를 제거합니다.', inline: false },
         { name: '/deactivate', value: '일일 문제 알림 수신을 비활성화 합니다.', inline: false },
-
-        { name: '\u200B', value: '\u200B' }
+        { name: '\u200B', value: '\u200B' },
+        { name: '업데이트 목록은 다음 링크에서 확인해주세요.', value: 'https://github.com/boaz-baekjoon/baekjoon-discord-bot/releases', inline: false },
     )
     .setTimestamp()
     .setFooter({text: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})

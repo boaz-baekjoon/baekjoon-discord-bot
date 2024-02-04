@@ -20,7 +20,7 @@ export default{
     data: new SlashCommandBuilder()
         .setName('similarid')
         .setDescription('유사한 문제를 받습니다.')
-        .addStringOption(option => option.setName('problem_id').setDescription('문제 번호를 입력해주세요.').setRequired(true)),
+        .addStringOption(option => option.setName('problem_id').setDescription('유사한 문제를 받고 싶으신 백준 문제의 번호를 입력해주세요.').setRequired(true)),
 
     async execute(interaction: ChatInputCommandInteraction) {
         try {

@@ -5,7 +5,7 @@ export default {
     data: new SlashCommandBuilder()
         .setName('report')
         .setDescription('버그나 개선사항을 제보합니다.')
-        .addStringOption(option => option.setName('content').setDescription('내용을 입력해주세요.').setRequired(true)),
+        .addStringOption(option => option.setName('content').setDescription('내용을 입력해주세요. 모든 피드백은 익명으로 개발자에게 전달됩니다.').setRequired(true)),
 
     async execute(interaction: ChatInputCommandInteraction) {
         try {

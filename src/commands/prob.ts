@@ -46,7 +46,7 @@ export default {
         try{
             const user = await MongoUtil.findUserWithDiscordId(interaction.user.id);
             if (!user) { //없다면
-                await interaction.reply("백준 아이디를 등록하지 않았습니다. !register을 통해 아이디를 등록해주세요");
+                await interaction.reply("백준 아이디를 등록하지 않았습니다. /register을 통해 아이디를 등록해주세요");
                 return;
             }
             const randProblem = await getRecommendedProblem(user['boj_id']);

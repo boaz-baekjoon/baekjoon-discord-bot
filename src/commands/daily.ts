@@ -14,7 +14,7 @@ export default{
     data: new SlashCommandBuilder()
         .setName('daily')
         .setDescription('일일 문제를 받을 시간을 정합니다.')
-        .addStringOption(option => option.setName('time').setDescription('일일 문제를 받을 시간을 입력해주세요.').setRequired(true)),
+        .addStringOption(option => option.setName('time').setDescription('일일 문제를 받을 시간을 입력해주세요. (HH MM, 예시: 13시 5분 => 13 05').setRequired(true)),
 
     async execute(interaction: ChatInputCommandInteraction){
         try{
@@ -33,6 +33,11 @@ export default{
 
             const userDailyTime = `${parseInt(hour, 10)} ${parseInt(min, 10)}`
 
+            const user = await MongoUtil.findUserWithDiscordId(interaction.user.id);
+            if (!user) {
+                await interaction.reply("백준 아이디를 등록하지 않았습니다. /register을 통해 아이디를 등록해주세요");
+                return;
+            }
             const response = await MongoUtil.addTime(interaction.user.id, userDailyTime);
             if (!response){
                 await interaction.reply("알 수 없는 오류가 발생했습니다.")
