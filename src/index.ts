@@ -5,6 +5,8 @@ import { logger } from './logger.js'
 import {initializeBot} from "./bot/initialize-bot.js";
 import {embedWelcome} from "./embedMessage/guideMessage.js";
 import {sendAdminMessage} from "./bot/adminMessage.js";
+import {ModelUtil} from "./util/modelUtil.js";
+import {MongoUtil} from "./util/mongoUtil.js";
 
 declare module "discord.js" {
     export interface Client {
@@ -37,6 +39,15 @@ client.on("guildCreate", async(guild) => {
     //Send welcome message
     channel.send({embeds: [embedWelcome]});
 })
+
+client.on('guildDelete', async(guild) => {
+    try{
+        await MongoUtil.deleteUser(guild.ownerId);
+        logger.info(`${guild.ownerId} / Bot is removed from guild`)
+    }catch (error){
+        logger.error(error);
+    }
+});
 
 client.on('interactionCreate', async (interaction: Interaction) => {
     try{
