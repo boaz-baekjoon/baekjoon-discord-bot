@@ -49,7 +49,7 @@ export class BojProblem{
                     },
                     {name: '링크', value: `https://www.acmicpc.net/problem/${this.problemId}`, inline: false}
                 )
-                .setFooter({text: 'Baekjoon Bot. 버그가 발생한 경우 !report로 제보해주세요.', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
+                .setFooter({text: 'Baekjoon Bot. 버그가 발생한 경우 /report로 제보해주세요. /help을 통해 새로운 명령어를 반드시 확인해주세요!', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
         }catch (error){
             logger.error(error)
             return getProblemErrorMsg();
