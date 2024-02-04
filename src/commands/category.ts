@@ -27,7 +27,7 @@ export default{
     async execute(interaction: ChatInputCommandInteraction){
         try{
             const number = interaction.options.getString('category');
-            if (number === null || parseInt(number) > 10 || parseInt(number) < 1){
+            if (number === null || parseInt(number) === null || parseInt(number) > 10 || parseInt(number) < 1){
                 await interaction.reply({embeds: [categoryList]});
                 await interaction.followUp("정확한 카테고리 번호를 입력해주세요.")
                 return;
