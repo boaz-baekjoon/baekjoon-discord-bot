@@ -4,8 +4,6 @@ import * as cron from 'node-cron';
 import { logger } from './logger.js'
 import {initializeBot} from "./bot/initialize-bot.js";
 import {embedWelcome} from "./embedMessage/guideMessage.js";
-import {sendAdminMessage} from "./bot/adminMessage.js";
-import {ModelUtil} from "./util/modelUtil.js";
 import {MongoUtil} from "./util/mongoUtil.js";
 
 declare module "discord.js" {

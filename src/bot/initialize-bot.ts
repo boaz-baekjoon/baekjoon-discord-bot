@@ -2,6 +2,7 @@ import {ApplicationCommandDataResolvable, Client, Collection, GatewayIntentBits,
 import { mongoConnect } from "../config/mongoDb.js";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
+import {exit} from "process";
 
 export async function initializeBot(client: Client){
     dotenv.config();
@@ -17,7 +18,7 @@ export async function initializeBot(client: Client){
         mongoConnect();
 
         //Loading Commands
-        const commands = fs.readdirSync("./dist/commands").filter(file => file.endsWith(".js"));
+        const commands = fs.readdirSync("./dist/commands").filter(file => file.endsWith(".js")).filter(file => file !== "adminMessage.js")
         const slashCommands = new Array<ApplicationCommandDataResolvable>();
         for (const file of commands) {
             const commandName = file.split(".")[0];
@@ -30,11 +31,19 @@ export async function initializeBot(client: Client){
         const rest = new REST({ version: "9" }).setToken(String(process.env.DISCORD_TOKEN));
         const response = await rest.put(Routes.applicationCommands(client.user!.id), { body: slashCommands });
 
+        //adminCommand
+        const adminCommand = await import("../commands/adminMessage.js");
+        const adminCommandData = adminCommand.default.data;
+        client.commands.set("adminmessage", adminCommand);
+        await rest.put(Routes.applicationGuildCommands(client.user!.id, String(process.env.ADMIN_SERVER)), { body: [adminCommandData.toJSON()] });
+
+
         //Initialize Success
         client.once('ready', async () => {
             console.log("BOJ Bot is ready")
         })
     }catch (error){
-        console.error(error)
+        console.error(error);
+        exit(0);
     }
 }
