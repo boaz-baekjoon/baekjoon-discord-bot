@@ -15,7 +15,7 @@ export default{
                 await interaction.reply("권한이 없습니다.")
                 return;
             } else {
-                const updateLog: string = fs.readFileSync('./src/assets/updatelog.txt', 'utf8');
+                const updateLog: string = fs.readFileSync('./dist/assets/updatelog.txt', 'utf8');
                 console.log(updateLog);
                 await interaction.reply("업데이트 사항을 전송합니다.")
                 await interaction.followUp(updateLog);
