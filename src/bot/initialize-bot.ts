@@ -32,10 +32,16 @@ export async function initializeBot(client: Client){
         const response = await rest.put(Routes.applicationCommands(client.user!.id), { body: slashCommands });
 
         //adminCommand
-        const adminCommand = await import("../commands/adminMessage.js");
-        const adminCommandData = adminCommand.default.data;
-        client.commands.set("adminmessage", adminCommand);
-        await rest.put(Routes.applicationGuildCommands(client.user!.id, String(process.env.ADMIN_SERVER)), { body: [adminCommandData.toJSON()] });
+        const adminCommands = fs.readdirSync("./dist/commands").filter(file => file.endsWith(".js")).filter(file => file.startsWith("admin"));
+        const slashAdminCommands = new Array<ApplicationCommandDataResolvable>();
+        for (const file of adminCommands) {
+            const commandName = file.split(".")[0];
+            const command = await import(`../commands/${file}`);
+            console.log(`Attempting to load admin command ${commandName}`);
+            slashAdminCommands.push(command.default.data);
+            client.commands.set(commandName, command);
+        }
+        const res = await rest.put(Routes.applicationGuildCommands(client.user!.id, String(process.env.ADMIN_SERVER)), { body: slashAdminCommands });
 
 
         //Initialize Success

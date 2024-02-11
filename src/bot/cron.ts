@@ -11,6 +11,7 @@ export async function sendDailyProblem(client: Client) {
 
         for (let user of users) {
             const randProblem = await getRecommendedProblem(user['boj_id'])
+            randProblem.hideTags();
             const randProblemMsg = randProblem.getEmbedMsg(`일일 문제: ${randProblem.problemId} - ${randProblem.title}`)
 
             const targetUser = await client.users.fetch(user.discord_id)

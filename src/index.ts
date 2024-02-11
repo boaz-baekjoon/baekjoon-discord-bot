@@ -53,7 +53,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         logger.verbose(`Command: ${interaction.commandName} / User: ${interaction.user.id}`)
 
         const command = interaction.client.commands.get(interaction.commandName);
-
         if (!command) return;
 
         await command.default.execute(interaction);

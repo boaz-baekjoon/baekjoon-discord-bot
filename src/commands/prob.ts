@@ -49,7 +49,8 @@ export default {
                 await interaction.reply("백준 아이디를 등록하지 않았습니다. /register을 통해 아이디를 등록해주세요");
                 return;
             }
-            const randProblem = await getRecommendedProblem(user['boj_id']);
+            const randProblem: BojProblem = await getRecommendedProblem(user['boj_id']);
+            randProblem.hideTags();
             await interaction.reply({embeds: [randProblem.getEmbedMsg("개인 맞춤형 문제입니다.")]});
         }catch (error){
             logger.error(error)

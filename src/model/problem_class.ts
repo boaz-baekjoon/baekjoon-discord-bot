@@ -44,7 +44,7 @@ export class BojProblem{
                     {name: '난이도:', value: `${this.getLevel()}`, inline: false},
                     {
                         name: '알고리즘 분류:',
-                        value: this.tags.length > 0 ? `${this.tags.join(', ')}` : '알고리즘 분류가 되어있지 않습니다.',
+                        value: this.tags.length > 0 ? `${this.tags.join(', ')}` : '-',
                         inline: false
                     },
                     {name: '링크', value: `https://www.acmicpc.net/problem/${this.problemId}`, inline: false}
@@ -55,6 +55,10 @@ export class BojProblem{
             return getProblemErrorMsg();
         }
 
+    }
+
+    hideTags(){
+        this.tags = []
     }
 
 }
