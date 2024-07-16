@@ -13,7 +13,6 @@
     ],
     "preserveValueImports": false,
     "forceConsistentCasingInFileNames": true,
-    "strict": true
   },
   "include": [
     "./src/**/*"
