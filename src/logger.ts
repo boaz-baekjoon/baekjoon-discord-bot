@@ -11,40 +11,37 @@ const logFormat = printf(({ level, message, label, timestamp }) => {
     return `${timestamp} [${label}] ${level}: ${message}`;
 });
 
+const dailyRotateFileTransport = new winstonDaily({
+    level: 'info',
+    datePattern: 'YYYY-MM-DD',
+    dirname: logDir,
+    filename: `%DATE%.log`,
+    maxFiles: 30,
+    zippedArchive: true,
+});
 
+const errorFileTransport = new winstonDaily({
+    level: 'error',
+    datePattern: 'YYYY-MM-DD',
+    dirname: `${logDir}/error`,
+    filename: `%DATE%.error.log`,
+    maxFiles: 30,
+    zippedArchive: true,
+});
 
-const transports = [
-    new winstonDaily({
-        level: 'info',
+const transports = [dailyRotateFileTransport, errorFileTransport];
+
+if (process.env.NODE_ENV !== 'production') {
+    const verboseFileTransport = new winstonDaily({
+        level: 'verbose',
         datePattern: 'YYYY-MM-DD',
         dirname: logDir,
         filename: `%DATE%.log`,
         maxFiles: 30,
         zippedArchive: true,
-    }),
+    });
 
-    new winstonDaily({
-        level: 'error',
-        datePattern: 'YYYY-MM-DD',
-        dirname: logDir + '/error',
-        filename: `%DATE%.error.log`,
-        maxFiles: 30,
-        zippedArchive: true,
-    }),
-];
-
-
-if (process.env.NODE_ENV !== 'production') {
-    transports.push(
-        new winstonDaily({
-            level: 'verbose',
-            datePattern: 'YYYY-MM-DD',
-            dirname: logDir,
-            filename: `%DATE%.log`,
-            maxFiles: 30,
-            zippedArchive: true,
-        }),
-    );
+    transports.push(verboseFileTransport);
 }
 
 export const logger = winston.createLogger({
@@ -67,15 +64,12 @@ export const logger = winston.createLogger({
     ],
 });
 
-if (process.env.NODE_ENV !== 'production') {
-    logger.add(
-        new winston.transports.Console({
-            format: winston.format.combine(
-                winston.format.colorize(),
-                winston.format.simple(),
-            ),
-        }),
-    );
-}
-
+logger.add(
+    new winston.transports.Console({
+        format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.simple(),
+        ),
+    }),
+);
 
