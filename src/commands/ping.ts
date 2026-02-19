@@ -1,10 +1,9 @@
-import {ChatInputCommandInteraction, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import type { BotCommand } from "../types.js";
 
 export default {
     data: new SlashCommandBuilder().setName('ping').setDescription('Replies with Pong!'),
     async execute(interaction: ChatInputCommandInteraction) {
-        console.log('input')
-
         await interaction.reply('Pong!');
     }
-}
+} satisfies BotCommand;

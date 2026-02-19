@@ -1,14 +1,13 @@
-import * as winston from 'winston';
+import winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
-import * as process from 'process';
 
 const { combine, timestamp, label, printf } = winston.format;
 
 const logDir = `${process.cwd()}/logs`;
 const logLevel = process.env.NODE_ENV === 'development' ? 'verbose' : 'info';
 
-const logFormat = printf(({ level, message, label, timestamp }) => {
-    return `${timestamp} [${label}] ${level}: ${message}`;
+const logFormat = printf((info) => {
+    return `${info.timestamp as string} [${info.label as string}] ${info.level}: ${info.message as string}`;
 });
 
 const dailyRotateFileTransport = new winstonDaily({
@@ -29,7 +28,7 @@ const errorFileTransport = new winstonDaily({
     zippedArchive: true,
 });
 
-const transports = [dailyRotateFileTransport, errorFileTransport];
+const transports: winstonDaily[] = [dailyRotateFileTransport, errorFileTransport];
 
 if (process.env.NODE_ENV !== 'production') {
     const verboseFileTransport = new winstonDaily({
@@ -72,4 +71,3 @@ logger.add(
         ),
     }),
 );
-

@@ -1,5 +1,7 @@
-import {MongoUtil} from "../util/mongoUtil.js";
-import {ChatInputCommandInteraction, Message, SlashCommandBuilder} from "discord.js";
+import { ReportRepository } from "../services/report-repository.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { logger } from "../logger.js";
+import type { BotCommand } from "../types.js";
 
 export default {
     data: new SlashCommandBuilder()
@@ -9,16 +11,16 @@ export default {
 
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const content = interaction.options.getString('content');
-            const result = await MongoUtil.insertReport(content!);
+            const content = interaction.options.getString('content', true);
+            const result = await ReportRepository.insert(content);
             if (result) {
-                await interaction.reply("정상적으로 전달되었습니다. 소중한 피드백 감사합니다.")
+                await interaction.reply("정상적으로 전달되었습니다. 소중한 피드백 감사합니다.");
             } else {
-                await interaction.reply("알 수 없는 오류가 발생했습니다.")
+                await interaction.reply("알 수 없는 오류가 발생했습니다.");
             }
         } catch (error) {
-            await interaction.reply("알 수 없는 오류가 발생했습니다.")
-            console.log(error)
+            await interaction.reply("알 수 없는 오류가 발생했습니다.");
+            logger.error(error);
         }
     }
-}
+} satisfies BotCommand;

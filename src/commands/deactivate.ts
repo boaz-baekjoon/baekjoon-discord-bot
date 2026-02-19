@@ -1,6 +1,7 @@
-import {ChatInputCommandInteraction, SlashCommandBuilder} from "discord.js";
-import {MongoUtil} from "../util/mongoUtil.js";
-import {logger} from "../logger.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { UserRepository } from "../services/user-repository.js";
+import { logger } from "../logger.js";
+import type { BotCommand } from "../types.js";
 
 export default {
     data: new SlashCommandBuilder()
@@ -8,20 +9,19 @@ export default {
         .setDescription('일일 문제 알림 수신을 비활성화 합니다.'),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const user = await MongoUtil.findUserWithDiscordId(interaction.user.id);
+            const user = await UserRepository.findByDiscordId(interaction.user.id);
             if (!user) {
-                await interaction.reply("등록되지 않은 유저입니다. /register를 통해 등록해주세요.")
+                await interaction.reply("등록되지 않은 유저입니다. /register를 통해 등록해주세요.");
                 return;
             }
 
-            const response = await MongoUtil.deleteTime(interaction.user.id);
+            const response = await UserRepository.deleteTime(interaction.user.id);
             if (response) {
-                await interaction.reply("정상적으로 중단되었습니다.")
+                await interaction.reply("정상적으로 중단되었습니다.");
             }
-            return;
-        } catch (error: any) {
-            await interaction.reply("알 수 없는 오류가 발생했습니다.")
-            logger.error(error.message)
+        } catch (error: unknown) {
+            await interaction.reply("알 수 없는 오류가 발생했습니다.");
+            logger.error(error instanceof Error ? error.message : error);
         }
     }
-}
+} satisfies BotCommand;

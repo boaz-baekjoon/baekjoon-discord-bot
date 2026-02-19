@@ -1,4 +1,4 @@
-import {EmbedBuilder} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
 export const categoryList = new EmbedBuilder()
     .setColor(0x3498DB)
@@ -17,6 +17,6 @@ export const categoryList = new EmbedBuilder()
         { name: '7: 최적화 문제', value: ' ', inline: false },
         { name: '8: 기하학적 알고리즘', value: ' ', inline: false },
         { name: '9: 고급 알고리즘', value: ' ', inline: false },
-)
+    )
     .setTimestamp()
-    .setFooter({text: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
+    .setFooter({text: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'});

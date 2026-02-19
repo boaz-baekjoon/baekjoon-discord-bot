@@ -1,4 +1,5 @@
-import {EmbedBuilder} from "discord.js";
+import { EmbedBuilder } from "discord.js";
+
 export const embedWelcome = new EmbedBuilder()
     .setColor(0x3498DB)
     .setAuthor({name: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
@@ -21,4 +22,4 @@ export const embedWelcome = new EmbedBuilder()
         { name: '업데이트 로그는 다음 링크에서 확인해주세요.', value: 'https://github.com/boaz-baekjoon/baekjoon-discord-bot/releases', inline: false },
     )
     .setTimestamp()
-    .setFooter({text: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'})
+    .setFooter({text: 'Baekjoon Bot', iconURL: 'https://avatars.githubusercontent.com/u/139442196?s=200&v=4'});

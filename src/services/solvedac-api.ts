@@ -1,6 +1,6 @@
-import {SolvedAcUser} from "../model/solvedac_user_class.js";
+import { SolvedAcUser } from "../models/solvedac-user.js";
 import axios from "axios";
-import {logger} from "../logger.js";
+import { logger } from "../logger.js";
 
 export async function searchUserInfoWithSolvedAc(userId: string): Promise<SolvedAcUser> {
     try {
@@ -10,11 +10,11 @@ export async function searchUserInfoWithSolvedAc(userId: string): Promise<Solved
                 handle: userId,
             }
         });
-        if (response.data['handle'] === userId) {
+        if (response.data.handle === userId) {
             return SolvedAcUser.returnUserWithResponse(response);
         }
-    } catch (error: any) {
-        logger.error(error.message)
+    } catch (error: unknown) {
+        logger.error(error instanceof Error ? error.message : error);
     }
     return SolvedAcUser.returnErrorInstance();
 }

@@ -14,25 +14,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.379.1",
-    "@types/node": "^20.10.4",
-    "@types/node-cron": "^3.0.11",
     "axios": "^1.4.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
     "mongoose": "^8.0.3",
-    "mysql2": "^3.6.0",
     "node-cron": "^3.0.2",
-    "process": "^0.11.10",
-    "reflect-metadata": "^0.1.14",
-    "sequelize": "^6.33.0",
-    "sequelize-cli": "^6.6.1",
-    "tslib": "^2.6.2",
-    "typeorm": "^0.3.17",
     "winston": "^3.10.0",
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
+    "@types/node": "^20.10.4",
+    "@types/node-cron": "^3.0.11",
     "eslint": "^8.54.0",
     "jest": "^29.6.2",
     "typescript": "^5.4.0-dev.20231230"
